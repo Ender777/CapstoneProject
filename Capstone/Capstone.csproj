@@ -41,9 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="databaseManager.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Student.cs" />
+    <Compile Include="studentDirectory.cs" />
+    <Compile Include="Teacher.cs" />
+    <Compile Include="teacherDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

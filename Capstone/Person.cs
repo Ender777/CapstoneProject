@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-//Working on adding Student and Teacher derived classes and reading about get/set accessors to
-//make sure my constructors and properties are good to go
 
 
 namespace Capstone
@@ -16,10 +14,15 @@ namespace Capstone
     {
         //Maintains a list of ID numbers to check for duplicates
         List<int> IDnumbers = new List<int>();
-        //fields common to Student and Teacher with properties for access
-        //NOT SURE I NEED TO ACCESS THEM, IF I READ DATA FROM THE DATABASE WHY WOULD i NEED
-        //TO ALTER THE FIELDS OF THE PEOPLE?
+        //fields common to Student and Teacher classes
         protected int id;
+        protected string name;
+        protected string phone;
+        protected string email;
+
+        //AFTER i CREATE THE PEOPLE i SHOULDN'T NEED TO ALTER THEM RIGHT?  SO THESE
+        //PROPERTIES DON'T REALLY NEED TO BE THERE?
+
         //public int ID
         //{
         //    get
@@ -33,7 +36,6 @@ namespace Capstone
         //        IDnumbers.Add(id);
         //    }
         //}
-        protected string name;
         //public string Name
         //{
         //    get
@@ -43,7 +45,6 @@ namespace Capstone
         //    set { }
         //}
 
-        protected string phone;
         //public string Phone
         //{
         //    get
@@ -52,7 +53,6 @@ namespace Capstone
         //    }
         //    set { }
         //}
-        protected string email;
         //public string Email
         //{
         //    get
@@ -62,16 +62,15 @@ namespace Capstone
         //    set { }
         //}
         
-        //empty constructor
-        public Person() { }
-        //constructor with all fields filled
+        //constructor for all common fields
         public Person(int ID, string Name, string Phone, string Email)
         {
+            //THIS SHOULD BE MOVED TO ADD METHOD IN STUDENT AND TEACHER DIRECTORIES MAYBE?
             //duplication checking that kicks out an error message if a duplicate ID is found
+            bool hasDuplicate = false;
 
             foreach (int i in IDnumbers)
             {
-                bool hasDuplicate = false;
                 if (ID.CompareTo(i) == 0)
                 {
                     Console.WriteLine("ID is a duplicate");
@@ -81,27 +80,15 @@ namespace Capstone
                 {
                     hasDuplicate = true;
                 }
-                if (hasDuplicate == true)
-                {
-                    id = ID;
-                }
+            }
+            if (hasDuplicate == true)
+            {
+                id = ID;
             }
 
             name = Name;
             phone = Phone;
             email = Email;
         }
-
-    }
-
-    //Student class that inherits from Person
-    class Student : Person
-    {
-
-    }
-    //Teacher class that inherits from Person
-    class Teacher : Person
-    {
-
     }
 }
