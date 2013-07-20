@@ -12,8 +12,11 @@ namespace Capstone
     {
         static void Main(string[] args)
         {
+
             databaseManager dbm = new databaseManager();
             dbm.ConnectToSQL();
+
+            Console.ReadLine();
         }
     }
 }
