@@ -21,18 +21,24 @@ namespace Capstone
             //connection to database
             SqlConnection conn = new SqlConnection("Data Source=HAL\\SQLEXPRESS;Initial Catalog=ClassSchedule;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False");
             //store the command in a string
-            string command = "SELECT * FROM Classrooms.RoomSize";
+            string roomNumberCommand = "SELECT RoomNumber FROM Classrooms";
             //create a SqlCommand using the string
-            SqlCommand cmd = new SqlCommand(command, conn);
+            SqlCommand cmd = new SqlCommand(roomNumberCommand, conn);
             try
             {
+                //TODO: this should read data to a class or struct that sends it all to
+                //the correct fully functional class, i.e. Teacher
                 conn.Open();
                 //testing connection, should read and dump a column to console window
                 SqlDataReader dataReader = cmd.ExecuteReader();
-                Console.WriteLine(dataReader.GetValue(0));
+                while (dataReader.Read())
+                {
+                    Console.WriteLine(dataReader.GetValue(0));
+                }
+                dataReader.Close();
 
             }
-            catch (Exception ex)//TODO: edit this exception handling later
+            catch (Exception)//TODO: edit this exception handling later
             {
                 Console.WriteLine("Failed to connect to data source");
             }

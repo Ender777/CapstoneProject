@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
-    class Student : Person
+    class Courses
     {
-        public Student(string Name, string Phone, string Email)
-            : base(Name, Phone, Email)
-        {
-        }
-
+        //TODO: fill this in
     }
 }

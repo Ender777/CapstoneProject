@@ -4,91 +4,76 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-
-
 namespace Capstone
 {
     //parent class for Student and Teacher
-    class Person
+    public abstract class Person : IComparable
     {
-        //Maintains a list of ID numbers to check for duplicates
-        List<int> IDnumbers = new List<int>();
         //fields common to Student and Teacher classes
-        protected int id;
-        protected string name;
-        protected string phone;
-        protected string email;
+        private int id;
+        private string name;
+        private string phone;
+        private string email;
 
-        //AFTER i CREATE THE PEOPLE i SHOULDN'T NEED TO ALTER THEM RIGHT?  SO THESE
-        //PROPERTIES DON'T REALLY NEED TO BE THERE?
-
-        //public int ID
-        //{
-        //    get
-        //    {
-        //        return id;
-        //    }
-        //    set
-        //    {
-        //        //if no duplicate found in constructor, add the ID number to the collection to be
-        //        //checked against in future additions  NOT SURE THIS IS IN THE RIGHT PLACE
-        //        IDnumbers.Add(id);
-        //    }
-        //}
-        //public string Name
-        //{
-        //    get
-        //    {
-        //        return name;
-        //    }
-        //    set { }
-        //}
-
-        //public string Phone
-        //{
-        //    get
-        //    {
-        //        return phone;
-        //    }
-        //    set { }
-        //}
-        //public string Email
-        //{
-        //    get
-        //    {
-        //        return email;
-        //    }
-        //    set { }
-        //}
+        public int ID
+        {
+            get
+            {
+                return id;
+            }
+            private set { id = value; }
+        }
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+        }
+        public string Phone
+        {
+            get
+            {
+                return phone;
+            }
+        }
+        public string Email
+        {
+            get
+            {
+                return email;
+            }
+        }
         
         //constructor for all common fields
-        public Person(int ID, string Name, string Phone, string Email)
+        public Person(string Name, string Phone, string Email)
         {
-            //THIS SHOULD BE MOVED TO ADD METHOD IN STUDENT AND TEACHER DIRECTORIES MAYBE?
-            //duplication checking that kicks out an error message if a duplicate ID is found
-            bool hasDuplicate = false;
-
-            foreach (int i in IDnumbers)
-            {
-                if (ID.CompareTo(i) == 0)
-                {
-                    Console.WriteLine("ID is a duplicate");
-                    break;
-                }
-                else
-                {
-                    hasDuplicate = true;
-                }
-            }
-            if (hasDuplicate == true)
-            {
-                id = ID;
-            }
-
             name = Name;
             phone = Phone;
             email = Email;
+        }
+        //calls SetID in personCollection to increment IDs so they're all unique
+        public void SetID(int id)
+        {
+            this.ID = id;
+        }
+
+        //IComparable implementation to be able to sort personCollection by Person
+        public int CompareTo(object obj)
+        {
+            //cast obj into Person
+            Person p = (Person)obj;
+            int result = 0;
+            //make sure the passed value is not null
+            if (p != null)
+            {
+                result = p.Name.ToUpper().CompareTo(this.Name.ToUpper());
+            }
+            else
+            {
+                Console.WriteLine("CompareTo Method failed");
+            }
+            return result;
         }
     }
 }

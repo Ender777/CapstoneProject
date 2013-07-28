@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="ClassroomSchedulerModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="ClassroomSchedulerModelStoreContainer">
+          <EntitySet Name="ClassroomApprovedCourses" EntityType="ClassroomSchedulerModel.Store.ClassroomApprovedCourses" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Classrooms" EntityType="ClassroomSchedulerModel.Store.Classrooms" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Courses" EntityType="ClassroomSchedulerModel.Store.Courses" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CourseTimes" EntityType="ClassroomSchedulerModel.Store.CourseTimes" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="sysdiagrams" EntityType="ClassroomSchedulerModel.Store.sysdiagrams" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_ClassroomApprovedCourses_Classrooms" Association="ClassroomSchedulerModel.Store.FK_ClassroomApprovedCourses_Classrooms">
+            <End Role="Classrooms" EntitySet="Classrooms" />
+            <End Role="ClassroomApprovedCourses" EntitySet="ClassroomApprovedCourses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClassroomApprovedCourses_Courses" Association="ClassroomSchedulerModel.Store.FK_ClassroomApprovedCourses_Courses">
+            <End Role="Courses" EntitySet="Courses" />
+            <End Role="ClassroomApprovedCourses" EntitySet="ClassroomApprovedCourses" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="ClassroomApprovedCourses">
+          <Key>
+            <PropertyRef Name="ClassroomID" />
+            <PropertyRef Name="CourseID" />
+          </Key>
+          <Property Name="ClassroomID" Type="int" Nullable="false" />
+          <Property Name="CourseID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Classrooms">
+          <Key>
+            <PropertyRef Name="ClassroomID" />
+          </Key>
+          <Property Name="ClassroomID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="RoomNumber" Type="char" Nullable="false" MaxLength="5" />
+          <Property Name="RoomSize" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Courses">
+          <Key>
+            <PropertyRef Name="CourseID" />
+          </Key>
+          <Property Name="CourseID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="CourseName" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="HoursPerSession" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CourseTimes">
+          <Key>
+            <PropertyRef Name="TimeID" />
+          </Key>
+          <Property Name="TimeID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="TimeFrame" Type="char" Nullable="false" MaxLength="15" />
+          <Property Name="StartTime" Type="time" />
+          <Property Name="EndTime" Type="time" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="128" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <Association Name="FK_ClassroomApprovedCourses_Classrooms">
+          <End Role="Classrooms" Type="ClassroomSchedulerModel.Store.Classrooms" Multiplicity="1" />
+          <End Role="ClassroomApprovedCourses" Type="ClassroomSchedulerModel.Store.ClassroomApprovedCourses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Classrooms">
+              <PropertyRef Name="ClassroomID" />
+            </Principal>
+            <Dependent Role="ClassroomApprovedCourses">
+              <PropertyRef Name="ClassroomID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClassroomApprovedCourses_Courses">
+          <End Role="Courses" Type="ClassroomSchedulerModel.Store.Courses" Multiplicity="1" />
+          <End Role="ClassroomApprovedCourses" Type="ClassroomSchedulerModel.Store.ClassroomApprovedCourses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Courses">
+              <PropertyRef Name="CourseID" />
+            </Principal>
+            <Dependent Role="ClassroomApprovedCourses">
+              <PropertyRef Name="CourseID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ClassroomSchedulerModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="ClassroomSchedulerEntities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="Classrooms" EntityType="ClassroomSchedulerModel.Classroom" />
+          <EntitySet Name="Courses" EntityType="ClassroomSchedulerModel.Cours" />
+          <EntitySet Name="CourseTimes" EntityType="ClassroomSchedulerModel.CourseTime" />
+          <EntitySet Name="sysdiagrams" EntityType="ClassroomSchedulerModel.sysdiagram" />
+          <AssociationSet Name="ClassroomApprovedCourses" Association="ClassroomSchedulerModel.ClassroomApprovedCourses">
+            <End Role="Classrooms" EntitySet="Classrooms" />
+            <End Role="Courses" EntitySet="Courses" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Classroom">
+          <Key>
+            <PropertyRef Name="ClassroomID" />
+          </Key>
+          <Property Name="ClassroomID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="RoomNumber" Type="String" Nullable="false" MaxLength="5" Unicode="false" FixedLength="true" />
+          <Property Name="RoomSize" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="Courses" Relationship="ClassroomSchedulerModel.ClassroomApprovedCourses" FromRole="Classrooms" ToRole="Courses" />
+        </EntityType>
+        <EntityType Name="Cours">
+          <Key>
+            <PropertyRef Name="CourseID" />
+          </Key>
+          <Property Name="CourseID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="CourseName" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="HoursPerSession" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="Classrooms" Relationship="ClassroomSchedulerModel.ClassroomApprovedCourses" FromRole="Courses" ToRole="Classrooms" />
+        </EntityType>
+        <EntityType Name="CourseTime">
+          <Key>
+            <PropertyRef Name="TimeID" />
+          </Key>
+          <Property Name="TimeID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="TimeFrame" Type="String" Nullable="false" MaxLength="15" Unicode="false" FixedLength="true" />
+          <Property Name="StartTime" Type="Time" Precision="7" />
+          <Property Name="EndTime" Type="Time" Precision="7" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <Association Name="ClassroomApprovedCourses">
+          <End Role="Classrooms" Type="ClassroomSchedulerModel.Classroom" Multiplicity="*" />
+          <End Role="Courses" Type="ClassroomSchedulerModel.Cours" Multiplicity="*" />
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ClassroomSchedulerModelStoreContainer" CdmEntityContainer="ClassroomSchedulerEntities">
+          <EntitySetMapping Name="Classrooms">
+            <EntityTypeMapping TypeName="ClassroomSchedulerModel.Classroom">
+              <MappingFragment StoreEntitySet="Classrooms">
+                <ScalarProperty Name="ClassroomID" ColumnName="ClassroomID" />
+                <ScalarProperty Name="RoomNumber" ColumnName="RoomNumber" />
+                <ScalarProperty Name="RoomSize" ColumnName="RoomSize" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Courses">
+            <EntityTypeMapping TypeName="ClassroomSchedulerModel.Cours">
+              <MappingFragment StoreEntitySet="Courses">
+                <ScalarProperty Name="CourseID" ColumnName="CourseID" />
+                <ScalarProperty Name="CourseName" ColumnName="CourseName" />
+                <ScalarProperty Name="HoursPerSession" ColumnName="HoursPerSession" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CourseTimes">
+            <EntityTypeMapping TypeName="ClassroomSchedulerModel.CourseTime">
+              <MappingFragment StoreEntitySet="CourseTimes">
+                <ScalarProperty Name="TimeID" ColumnName="TimeID" />
+                <ScalarProperty Name="TimeFrame" ColumnName="TimeFrame" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="ClassroomSchedulerModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="ClassroomApprovedCourses" TypeName="ClassroomSchedulerModel.ClassroomApprovedCourses" StoreEntitySet="ClassroomApprovedCourses">
+            <EndProperty Name="Classrooms">
+              <ScalarProperty Name="ClassroomID" ColumnName="ClassroomID" />
+            </EndProperty>
+            <EndProperty Name="Courses">
+              <ScalarProperty Name="CourseID" ColumnName="CourseID" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
