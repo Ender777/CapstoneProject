@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="classCollection.cs" />
     <Compile Include="classItem.cs" />
     <Compile Include="Classroom.cs">
       <DependentUpon>ClassSchedule.tt</DependentUpon>

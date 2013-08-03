@@ -6,27 +6,27 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
-    //class to hold people
-    //THINK THIS ELIMINATES THE NEED FOR DIRECTORY CLASSES?
+    //class to hold list of people
     public class personCollection : IEnumerable<Person>
     {
         //list that maintains Students and Teachers
-        private List<Person> People = new List<Person>();
+        private List<Person> people = new List<Person>();
 
-        public List<Person> people
+        //property
+        public List<Person> People
         {
             get
             {
-                return People;
+                return people;
             }
         }
         //add method for people
         public void Add(Person person)
         {
             //ID setting logic for if there are people in the peopleCollection
-            if (people.Count != 0)
+            if (People.Count != 0)
             {
-                Person highestID = people.OrderByDescending(p => p.ID).First();
+                Person highestID = People.OrderByDescending(p => p.ID).First();
                 person.SetID(highestID.ID + 1);
             }
             //if first person entered, add person
@@ -34,19 +34,19 @@ namespace Capstone
             {
                 person.SetID(1);
             }
-            people.Add(person);
-            people.Sort();
+            People.Add(person);
+            People.Sort();
         }
 
         //implementing IEnumerable so I can use a foreach
         public IEnumerator<Person> GetEnumerator()
         {
-            return people.GetEnumerator();
+            return People.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return people.GetEnumerator();
+            return People.GetEnumerator();
         }
 
         //This is the implementation of IEnumerable from Jonathan's project.  Don't know why it's different.

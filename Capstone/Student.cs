@@ -8,6 +8,7 @@ namespace Capstone
 {
     class Student : Person
     {
+        //constructor calls base for all fields
         public Student(string Name, string Phone, string Email)
             : base(Name, Phone, Email)
         {

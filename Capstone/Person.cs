@@ -15,13 +15,17 @@ namespace Capstone
         private string phone;
         private string email;
 
+        //properties
         public int ID
         {
             get
             {
                 return id;
             }
-            private set { id = value; }
+            private set 
+            { 
+                id = value; 
+            }
         }
         public string Name
         {
@@ -52,7 +56,7 @@ namespace Capstone
             phone = Phone;
             email = Email;
         }
-        //calls SetID in personCollection to increment IDs so they're all unique
+        
         public void SetID(int id)
         {
             this.ID = id;

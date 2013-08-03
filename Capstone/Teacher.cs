@@ -6,19 +6,25 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
-    //TODO: need to establish other Classes first, like Classes, Courses, ClassItems
     class Teacher : Person
     {
-        public Teacher(string Name, string Phone, string Email)
+        //field unique to teachers
+        private Courses approvedCourses;
+
+        //property unique to teachers
+        public Courses ApprovedCourses
+        {
+            get
+            {
+                return approvedCourses;
+            }
+        }
+
+        //constructor calling base class for common fields and implementing unique one
+        public Teacher(string Name, string Phone, string Email, Courses ApprovedCourses)
             : base(Name, Phone, Email)
         {
-            //list of courses for each teacher
-            //List<string> courses;
-
-
-            //TODO: need a method that reads courses teachers can teach from database
-            //and adds them to the list for each teacher item.  This might go in the
-            //databaseManager class?
+            approvedCourses = ApprovedCourses;
         }
     }
 }
