@@ -13,10 +13,10 @@ namespace Capstone
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class ClassroomSchedulerEntities : DbContext
+    public partial class ClassroomSchedulerEntities1 : DbContext
     {
-        public ClassroomSchedulerEntities()
-            : base("name=ClassroomSchedulerEntities")
+        public ClassroomSchedulerEntities1()
+            : base("name=ClassroomSchedulerEntities1")
         {
         }
     

@@ -4,24 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//WORKING ON: There's a disconnect between the databaseManager class and the program class.
-//the data isn't being loaded when I try and display the courses available.
+//WORKING ON: query writing in databaseManager method to be called by main during the scheduling
+//of a class
 
 namespace Capstone
 {
     class Program
     {
-        //create instances of collections needed
+        //create instances of items needed
         static personCollection people = new personCollection();
+        //bools for if a Teacher or Student has been added has been added to people
+        static bool hasTeacher = false;
+        static bool hasStudent = false;
         static Courses courses = new Courses();
+        static databaseManager dm = new databaseManager();
+        static List<Classroom> classrooms;
+        static List<CourseTime> courseTimes;
+
+
 
         static void Main(string[] args)
         {
             Console.WriteLine("Loading...");
             //create and call databaseManager to load data from db upon startup
-            databaseManager dm = new databaseManager();
+            //databaseManager dm = new databaseManager();
             dm.ConnectToSQL();
-
+            Console.WriteLine("Welcome to the program!");
             //while loop to keep program going
             bool programRunning = true;
             while (programRunning)
@@ -34,11 +42,21 @@ namespace Capstone
                 switch (choice)
                 {
                     case "1":
-                       AddStudent();
-                       break;
+                        AddStudent();
+                        break;
                     case "2":
-                       AddTeacher();
-                       break;
+                        AddTeacher();
+                        break;
+                    case "3":
+                        ScheduleClass();
+                        break;
+                    case "4":
+                        //TODO: call method to look up data
+                        break;
+                    case "5":
+                        Console.WriteLine("Closing...");
+                        programRunning = false;
+                        break;
                 }
             }
         }
@@ -47,15 +65,15 @@ namespace Capstone
         //method to display the main options
         public static void DisplayMenu()
         {
-            Console.WriteLine("Welcome to the program!");
-            Console.WriteLine("Here are your options...");
+            Console.WriteLine("Here are your options");
             Console.WriteLine("1...add a student");
             Console.WriteLine("2...add a teacher");
             Console.WriteLine("3...schedule a class");
             Console.WriteLine("4...look up some info");
+            Console.WriteLine("5...close program");
         }
 
-        //method to add student
+        //method to add student-----------------------------------------------------------
         public static void AddStudent()
         {
             string name;
@@ -69,25 +87,33 @@ namespace Capstone
             Console.Write("Enter Email address\n");
             email = Console.ReadLine();
 
-            if (name != null && phone != null && email != null)
+            if (name != "" && phone != "" && email != "")
             {
                 Student s = new Student(name, phone, email);
-                people.Add(s);
-                Console.WriteLine("{0} added successfully!", s.Name);
+                if (people.Contains(s))
+                {
+                    Console.WriteLine("The name, phone number, or email entered is already taken, please enter a new one");
+                }
+                else
+                {
+                    people.Add(s);
+                    hasStudent = true;
+                    Console.WriteLine("{0} added successfully!", s.Name);
+                }
             }
             else
             {
-                Console.Write("Error inputting information, please try again");
+                Console.WriteLine("Error inputting information, please try again");
             }
         }
 
-        //method to add teacher
+        //method to add teacher-----------------------------------------------------------
         public static void AddTeacher()
         {
             string name;
             string phone;
             string email;
-            Courses tempList = new Courses();
+            Courses approvedCourses = new Courses();
 
             Console.Write("Enter Name\n");
             name = Console.ReadLine();
@@ -95,43 +121,53 @@ namespace Capstone
             phone = Console.ReadLine();
             Console.Write("Enter Email address\n");
             email = Console.ReadLine();
-            Console.Write("Enter Course ID for course this teacher can teach");
             //display all course options
-            foreach (Cours c in courses)
+            foreach (Cours c in dm.DBCourses)
             {
                 Console.WriteLine("Course ID: {0}\tName: {1}", c.CourseID, c.CourseName);
             }
 
             //bool and while loop to keep adding courses until the user stops
             bool keepAdding = true;
+            //loops through all courses comparing entered ID to courseIDs.  If a match
+            //is found, bool is set to true and if statement is entered, assigning match
+            //to the list.  After this is completed, ask user if they want to add more 
+            //classes and loop again.
             while (keepAdding)
             {
-                Console.WriteLine("Enter ID of course to add\n");
-                int id = int.Parse(Console.ReadLine());
+                Console.WriteLine("Enter ID of a course this teacher can teach");
 
+                //setting up tryparse for error checking
+                string answer= Console.ReadLine();
+                int id;
+                bool result = int.TryParse(answer, out id);
 
-                //loops through all courses comparing entered ID to courseIDs.  If a match
-                //is found, bool is set to true and if statement is entered, assigning match
-                //to the list.  After this is completed, ask user if they want to add more 
-                //classes and loop again.
                 bool match = false;
                 Cours matchedCourse = null;
-                foreach (Cours c in courses)
+                foreach (Cours c in dm.DBCourses)
                 {
-                    if (c.CourseID == id)
+                    if (id == c.CourseID)
                     {
                         match = true;
                         matchedCourse = c;
                     }
                 }
-
                 if (match == true)
                 {
-                    tempList.Add(matchedCourse);
+                    //nested if statement checks for duplicates and writes and error message if found.
+                    if (approvedCourses.Contains(matchedCourse))
+                    {
+                        Console.WriteLine("this course has already been added, you can't add it twice!");
+                    }
+                    else
+                    {
+                        approvedCourses.Add(matchedCourse);
+                        Console.WriteLine("class successfully added");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Incorrect ID entered");
+                    Console.WriteLine("invalid class number entered");
                 }
                 Console.WriteLine("Add another class?\n1...yes\n2...no");
                 string anotherClass = Console.ReadLine();
@@ -144,15 +180,88 @@ namespace Capstone
                         break;
                 }
             }
-            if (tempList.CourseCollection.Count != 0)
+            //once all classes are assigned, check for null, then create teacher with those classes
+            //and add him/her to list
+            if (approvedCourses.CourseCollection.Count != 0)
             {
-                Teacher t = new Teacher(name, phone, email, tempList);
-                people.Add(t);
-                Console.WriteLine("{0} added Successfully!", t.Name);
+                Teacher t = new Teacher(name, phone, email, approvedCourses);
+                if (people.Contains(t))
+                {
+                    Console.WriteLine("The name, phone number, or email entered is already taken, please enter a new one");
+                }
+                else
+                {
+                    people.Add(t);
+                    hasTeacher = true;
+                    Console.WriteLine("{0} added Successfully!", t.Name);
+                }
             }
             else
             {
                 Console.WriteLine("No courses were successfully added that this teacher can teach.  Teacher was not added.");
+            }
+        }
+
+        //method to schedule a class---------------------------------------------------------
+        public static void ScheduleClass()
+        {
+            //declare variables to pass to classItem constructors here.
+            Cours courseToSchedule = null;
+
+            //list to hold IDs of classItems to check against
+            List<int> numberList = new List<int>();
+            if (hasTeacher == false || hasStudent == false)//condition to check if student and teacher have been created
+            {
+                Console.WriteLine("You can't schedule a class until a student and a teacher has been added.");
+            }
+            else
+            {
+                Console.WriteLine("Enter a unique number for this course");
+                string numberAnswer = Console.ReadLine();
+                int number;
+                bool numberResult = int.TryParse(numberAnswer, out number);
+                //if conversion worked, check for preexisting ID.  If not there, store value to proceed
+                if (numberResult == true)
+                {
+                    if (numberList.Contains(number))
+                    {
+                        Console.WriteLine("That class number has already been used.");
+                    }
+                    else
+                    {
+                        numberList.Add(number);
+                    }
+                }
+                //display courses and get ID of course
+                foreach (Cours c in dm.DBCourses)
+                {
+                    Console.WriteLine("Course ID: {0}\tName: {1}", c.CourseID, c.CourseName);
+                }
+                Console.WriteLine("Enter the number of the course to schedule");
+                string IDAnswer = Console.ReadLine();
+                int ID;
+                bool IDResult = int.TryParse(IDAnswer, out ID);
+                if (numberResult == false || ID > 14)
+                {
+                    Console.WriteLine("Enter a valid course ID");
+                }
+
+                foreach (Cours c in dm.DBCourses)
+                {
+                    if (ID.CompareTo(c.CourseID) == 0)
+                    {
+                        courseToSchedule = c;
+                    }
+                }
+                Console.WriteLine(courseToSchedule.Classrooms);
+                //List<Classroom> approvedRooms = dm.classroomQuery(courseToSchedule);
+                //foreach (Classroom cr in approvedRooms)
+                //{
+                //    Console.WriteLine("ID: {0}, Room Number: {1}, Size: {2}", cr.ClassroomID, cr.RoomNumber, cr.RoomSize);
+                //}
+                Console.WriteLine("Enter classroom ID");
+                Console.ReadLine();
+                
             }
         }
     }

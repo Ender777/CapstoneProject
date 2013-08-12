@@ -9,11 +9,9 @@ namespace Capstone
     class classItem
     {
         //fields that make a class item
-        //needs to be unique
         private int itemNumber;
         private List<CourseTime> courseTimes;
         private Teacher teacher;
-        //no duplicates
         private List<Student> enrolledStudents;
         private Classroom room;
         private Cours course;
@@ -25,7 +23,7 @@ namespace Capstone
             {
                 return itemNumber;
             }
-            //SHOULD THIS ONE BE PRIVATE?
+            //TODO: SHOULD THIS ONE BE PRIVATE?
             set
             {
                 itemNumber = value;
@@ -47,7 +45,6 @@ namespace Capstone
         }
         public List<Student> EnrolledStudents
         {
-            //logic to keep duplicates out
             get
             {
                 return enrolledStudents;

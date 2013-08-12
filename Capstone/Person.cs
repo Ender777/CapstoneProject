@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Capstone
 {
     //parent class for Student and Teacher
-    public abstract class Person : IComparable
+    public abstract class Person : IComparable, IEquatable<Person>
     {
         //fields common to Student and Teacher classes
         private int id;
@@ -62,7 +62,7 @@ namespace Capstone
             this.ID = id;
         }
 
-        //IComparable implementation to be able to sort personCollection by Person
+        //IComparable implementation to be able to sort personCollection by Person---------------
         public int CompareTo(object obj)
         {
             //cast obj into Person
@@ -78,6 +78,18 @@ namespace Capstone
                 Console.WriteLine("CompareTo Method failed");
             }
             return result;
+        }
+        //IEquatable implementation to utilize Contains() and kick out duplicates----------------
+        public bool Equals(Person other)
+        {
+            if (this.Name == other.Name || this.Phone == other.Phone || this.Email == other.Email)
+            { 
+                return true;
+            }
+            else 
+            { 
+                return false; 
+            }
         }
     }
 }

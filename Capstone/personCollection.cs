@@ -38,7 +38,7 @@ namespace Capstone
             People.Sort();
         }
 
-        //implementing IEnumerable so I can use a foreach
+        //implementing IEnumerable so I can use a foreach---------------------------------
         public IEnumerator<Person> GetEnumerator()
         {
             return People.GetEnumerator();
