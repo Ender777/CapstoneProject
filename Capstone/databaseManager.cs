@@ -79,17 +79,5 @@ namespace Capstone
             }
 
         }
-        public List<Classroom> classroomQuery(Cours c)
-        {
-            //this is probably all wrong.  Having a tough time with this one.
-            var validRooms = from classes in context.Classrooms
-                             join courses in context.Courses on classes.ClassroomID equals courses.CourseID
-                             select classes.ClassroomID;
-
-            foreach (int i in validRooms)
-            {
-
-            }
-        }
     }
 }

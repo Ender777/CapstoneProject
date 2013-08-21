@@ -13,14 +13,15 @@ namespace Capstone
     {
         //create instances of items needed
         static personCollection people = new personCollection();
+        static databaseManager dm = new databaseManager();
+        static classCollection scheduledClasses = new classCollection();
+        //static List<Classroom> classrooms;
+        //static List<CourseTime> courseTimes;
+        //static Courses courses = new Courses();
+
         //bools for if a Teacher or Student has been added has been added to people
         static bool hasTeacher = false;
         static bool hasStudent = false;
-        static Courses courses = new Courses();
-        static databaseManager dm = new databaseManager();
-        static List<Classroom> classrooms;
-        static List<CourseTime> courseTimes;
-
 
 
         static void Main(string[] args)
@@ -57,6 +58,9 @@ namespace Capstone
                         Console.WriteLine("Closing...");
                         programRunning = false;
                         break;
+                    default:
+                        Console.WriteLine("Invalid input, please try again");
+                        break;
                 }
             }
         }
@@ -89,7 +93,8 @@ namespace Capstone
 
             if (name != "" && phone != "" && email != "")
             {
-                Student s = new Student(name, phone, email);
+                bool isTeacher = false;
+                Student s = new Student(name, phone, email, isTeacher);
                 if (people.Contains(s))
                 {
                     Console.WriteLine("The name, phone number, or email entered is already taken, please enter a new one");
@@ -97,6 +102,7 @@ namespace Capstone
                 else
                 {
                     people.Add(s);
+                    //bool used in scheduling a class for error checking
                     hasStudent = true;
                     Console.WriteLine("{0} added successfully!", s.Name);
                 }
@@ -151,6 +157,7 @@ namespace Capstone
                         match = true;
                         matchedCourse = c;
                     }
+                    //TODO: check if this part will break
                 }
                 if (match == true)
                 {
@@ -169,7 +176,7 @@ namespace Capstone
                 {
                     Console.WriteLine("invalid class number entered");
                 }
-                Console.WriteLine("Add another class?\n1...yes\n2...no");
+                Console.WriteLine("Add another class?\n1...Yes\n2...No");
                 string anotherClass = Console.ReadLine();
                 switch (anotherClass)
                 {
@@ -184,7 +191,8 @@ namespace Capstone
             //and add him/her to list
             if (approvedCourses.CourseCollection.Count != 0)
             {
-                Teacher t = new Teacher(name, phone, email, approvedCourses);
+                bool isTeacher = true;
+                Teacher t = new Teacher(name, phone, email, isTeacher, approvedCourses);
                 if (people.Contains(t))
                 {
                     Console.WriteLine("The name, phone number, or email entered is already taken, please enter a new one");
@@ -192,6 +200,7 @@ namespace Capstone
                 else
                 {
                     people.Add(t);
+                    //bool used in scheduling a class for error checking
                     hasTeacher = true;
                     Console.WriteLine("{0} added Successfully!", t.Name);
                 }
@@ -202,14 +211,25 @@ namespace Capstone
             }
         }
 
+
+
         //method to schedule a class---------------------------------------------------------
+
+
+
         public static void ScheduleClass()
         {
             //declare variables to pass to classItem constructors here.
+            int numberOfCourseToSchedule = 0;
             Cours courseToSchedule = null;
+            Classroom roomToSchedule = null;
+            CourseTime timeToSchedule = null;
+            Teacher teacherToSchedule = null;
+            List<Student> studentsToSchedule = new List<Student>();
 
             //list to hold IDs of classItems to check against
             List<int> numberList = new List<int>();
+
             if (hasTeacher == false || hasStudent == false)//condition to check if student and teacher have been created
             {
                 Console.WriteLine("You can't schedule a class until a student and a teacher has been added.");
@@ -226,42 +246,223 @@ namespace Capstone
                     if (numberList.Contains(number))
                     {
                         Console.WriteLine("That class number has already been used.");
+                        //TODO: Program might break here, test this bit
                     }
                     else
                     {
                         numberList.Add(number);
+                        numberOfCourseToSchedule = number;
                     }
                 }
-                //display courses and get ID of course
+                else
+                {
+                    Console.WriteLine("input invalid, please enter a number");
+                }
+                //display courses and get ID of course--------------------------------------------------
                 foreach (Cours c in dm.DBCourses)
                 {
                     Console.WriteLine("Course ID: {0}\tName: {1}", c.CourseID, c.CourseName);
                 }
-                Console.WriteLine("Enter the number of the course to schedule");
+                Console.WriteLine("Enter the Course ID number of the course to schedule");
                 string IDAnswer = Console.ReadLine();
-                int ID;
-                bool IDResult = int.TryParse(IDAnswer, out ID);
-                if (numberResult == false || ID > 14)
+                //this part below should be a method, it would make this less lengthy
+                int courseID;
+                bool IDResult = int.TryParse(IDAnswer, out courseID);
+                if (numberResult == false || courseID > 14 || courseID <= 0)
+                {
+                    Console.WriteLine("Enter a valid course ID");
+                    DisplayMenu();//TODO: program can break here, come up with a way to start over if entry is invalid.  DisplayMenu() might work, might also cause recursion problems.  Needs testing.
+                }
+                else
+                {
+                    foreach (Cours c in dm.DBCourses)
+                    {
+                        if (courseID.CompareTo(c.CourseID) == 0)
+                        {
+                            courseToSchedule = c;
+                        }
+                    }
+                }
+
+                //Start of classroom selection---------------------TODO: This is going to need checking for room availability somehow-----------------------------------
+                foreach (Classroom c in courseToSchedule.Classrooms)
+                
+                {
+                    Console.WriteLine("Classroom ID: {0}, Classroom Number: {1}, Maximum students: {2}", c.ClassroomID, c.RoomNumber, c.RoomSize);
+                }
+                Console.WriteLine("Enter classroom ID");
+                string ClassroomAnswer = Console.ReadLine();
+                int roomID;
+                bool roomIDResult = int.TryParse(ClassroomAnswer, out roomID);
+                if (roomIDResult == false)//TODO: possible additional error checking for invalid room ID entries
                 {
                     Console.WriteLine("Enter a valid course ID");
                 }
-
-                foreach (Cours c in dm.DBCourses)
+                else
                 {
-                    if (ID.CompareTo(c.CourseID) == 0)
+                    foreach (Classroom c in courseToSchedule.Classrooms)
                     {
-                        courseToSchedule = c;
+                        if (roomID.CompareTo(c.ClassroomID) == 0)
+                        {
+                            roomToSchedule = c;
+                        }
                     }
                 }
-                Console.WriteLine(courseToSchedule.Classrooms);
-                //List<Classroom> approvedRooms = dm.classroomQuery(courseToSchedule);
-                //foreach (Classroom cr in approvedRooms)
-                //{
-                //    Console.WriteLine("ID: {0}, Room Number: {1}, Size: {2}", cr.ClassroomID, cr.RoomNumber, cr.RoomSize);
-                //}
-                Console.WriteLine("Enter classroom ID");
-                Console.ReadLine();
-                
+                //Start of time selection----------------TODO: This is going to need checking for time availability of room and the ability to block out a certain number of hours somehow------------------------------
+                foreach (CourseTime ct in dm.DBTimes)
+                {
+                    Console.WriteLine("Time ID: {0}, Timeframe: {1}", ct.TimeID, ct.TimeFrame);
+                }
+                Console.WriteLine("Select a time ID");
+                string timeAnswer = Console.ReadLine();
+                int timeID;
+                bool timeIDResult = int.TryParse(timeAnswer, out timeID);
+                if (timeIDResult == false)//TODO: possible additional error checking for invalid time ID entries
+                {
+                    Console.WriteLine("Enter a valid time ID");
+                }
+                else
+                {
+                    foreach (CourseTime ct in dm.DBTimes)
+                    {
+                        if (timeID.CompareTo(ct.TimeID) == 0)
+                        {
+                            timeToSchedule = ct;
+                        }
+                    }
+                }
+                //Start of teacher selection-----------------------------TODO: Will need to check to see if teacher is available for times----------------------------
+                //temporary list of teachers to compare their approved courses to
+                List<Person> teacherList = new List<Person>();
+                //filters teachers out into list to compare to
+                foreach (Person p in people)
+                {
+                    if (p.IsTeacher == true)
+                    {
+                        teacherList.Add(p);
+                    }
+                }
+                //checks each teacher's list of approved courses and prints that teacher if eligible to teach the course
+                foreach (Teacher t in teacherList)
+                {
+                    if (t.ApprovedCourses.Contains(courseToSchedule))
+                    {
+                        Console.WriteLine("Teacher ID: {0}, teacher name: {1}", t.ID, t.Name);
+                    }
+                }
+                Console.WriteLine("Enter ID of teacher to teach course");
+                string teacherAnswer = Console.ReadLine();
+                int teacherID;
+                bool teacherIDResult = int.TryParse(teacherAnswer, out teacherID);
+                if (teacherIDResult == false)//TODO: possible additional error checking for invalid teacher ID entries
+                {
+                    Console.WriteLine("Enter a valid teacher ID");
+                }
+                else
+                {
+                    foreach (Teacher t in teacherList)
+                    {
+                        if (teacherID.CompareTo(t.ID) == 0)
+                        {
+                            teacherToSchedule = t;
+                        }
+                    }
+                }
+                //Start of student selection-----------------------------TODO: will need to check to see if students are available for times------------------------------
+                List<Person> studentList = new List<Person>();
+                //keeps the list of students below at or below the maximum as determined by the roomsize
+                studentList.Capacity = roomToSchedule.RoomSize; //TODO: need a check for this somewhere so program doesn't break when one above the capacity is added
+                foreach (Person p in people)
+                {
+                    if (p.IsTeacher == false)
+                    {
+                        studentList.Add(p);
+                    }
+                }
+                foreach (Person p in studentList)
+                {
+                    Console.WriteLine("Student ID: {0}, student name: {1}", p.ID, p.Name);
+                }
+
+                bool moreStudents = true;
+                while (moreStudents == true)
+                {
+                    Console.WriteLine("Enter ID of a student to take course");
+                    string studentAnswer = Console.ReadLine();
+                    int studentID;
+                    bool studentIDResult = int.TryParse(studentAnswer, out studentID);
+                    if (studentIDResult == false)//TODO: possible additional error checking for invalid student ID entries
+                    {
+                        Console.WriteLine("Enter a valid student ID");
+                    }
+                    else
+                    {
+                        bool success = false;
+                        foreach (Student s in studentList)
+                        {
+                            if (studentID.CompareTo(s.ID) == 0 && studentList.Contains(s) == false)
+                            {
+                                studentsToSchedule.Add(s);
+                                Console.WriteLine("{0} added successfully!", s.Name);
+                                success = true;
+                            }
+                        }
+                        if (success == false)
+                        {
+                            Console.WriteLine("Invalid ID entered, student not added");
+                        }
+                        Console.WriteLine("{0} students in this class out of a possible {1}.  Add another student?\n1...Yes\n2...No", studentList.Count, studentList.Capacity);
+                        string answer = Console.ReadLine();
+                        switch (answer)
+                        {
+                            case "1":
+                                if (studentList.Count == studentList.Capacity)
+                                {
+                                    Console.WriteLine("Class is full, no more students will be enrolled.");
+                                    moreStudents = false;
+                                }
+                                else
+                                {
+                                    moreStudents = true;
+                                }
+                                break;
+                            case "2":
+                                moreStudents = false;
+                                break;
+                            default:
+                                Console.WriteLine("Invalid input, please try again");
+                                break;
+                        }
+                    }
+                }
+                //------------------start of displaying info---------------------------------------------------------------
+                Console.WriteLine("\nSo here's what we have so far:");
+                Console.WriteLine("Unique class number: {0}", numberOfCourseToSchedule);
+                Console.WriteLine("Course name: {0}", courseToSchedule.CourseName);
+                Console.WriteLine("Teacher's ID: {0}, Teacher's name: {1}", teacherToSchedule.ID, teacherToSchedule.Name);
+                Console.WriteLine("Classroom ID: {0}, Classroom number: {1}, Classroom size: {2}", roomToSchedule.ClassroomID, roomToSchedule.RoomNumber, roomToSchedule.RoomSize);
+                Console.WriteLine("Course time: {0}", timeToSchedule.TimeFrame);
+                Console.WriteLine("Students enrolled:");
+                foreach (Student s in studentList)
+                {
+                    Console.WriteLine("\tStudent's ID: {0}, Student's name: {1}", s.ID, s.Name);
+                }
+                Console.WriteLine("Would you like to schedule this class?\n1...Yes\n2...No");
+                string scheduleClass = Console.ReadLine();
+                switch (scheduleClass)
+                {
+                    case "1":
+                        classItem newClass = new classItem(numberOfCourseToSchedule, timeToSchedule, teacherToSchedule, studentsToSchedule, roomToSchedule, courseToSchedule);
+                        Console.WriteLine("Class successfully added!");
+                        break;
+                    case "2":
+                        Console.WriteLine("Deleting data...");
+                        DisplayMenu();//TODO: see if there's a better way to do this without causing stack overflow recursion issues here
+                        break;
+                    default:
+                        Console.WriteLine("Invalid input, please try again");
+                        break;
+                }
             }
         }
     }

@@ -21,8 +21,8 @@ namespace Capstone
         }
 
         //constructor calling base class for common fields and implementing unique one
-        public Teacher(string Name, string Phone, string Email, Courses ApprovedCourses)
-            : base(Name, Phone, Email)
+        public Teacher(string Name, string Phone, string Email, bool IsTeacher, Courses ApprovedCourses)
+            : base(Name, Phone, Email, IsTeacher)
         {
             approvedCourses = ApprovedCourses;
         }

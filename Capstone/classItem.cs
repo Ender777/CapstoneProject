@@ -10,7 +10,7 @@ namespace Capstone
     {
         //fields that make a class item
         private int itemNumber;
-        private List<CourseTime> courseTimes;
+        private CourseTime courseTimes;
         private Teacher teacher;
         private List<Student> enrolledStudents;
         private Classroom room;
@@ -29,7 +29,7 @@ namespace Capstone
                 itemNumber = value;
             }
         }
-        public List<CourseTime> CourseTimes
+        public CourseTime CourseTimes
         {
             get
             {
@@ -66,7 +66,7 @@ namespace Capstone
         }
 
         //constructor
-        public classItem(int ItemNumber, List<CourseTime> CourseTimes, Teacher Teacher, List<Student> EnrolledStudent, Classroom Room, Cours Course)
+        public classItem(int ItemNumber, CourseTime CourseTimes, Teacher Teacher, List<Student> EnrolledStudent, Classroom Room, Cours Course)
         {
             itemNumber = ItemNumber;
             courseTimes = CourseTimes;

@@ -14,6 +14,7 @@ namespace Capstone
         private string name;
         private string phone;
         private string email;
+        private bool isTeacher; //TODO: Maybe use this as a hook to use in a foreach to cycle through only teachers or only students
 
         //properties
         public int ID
@@ -48,13 +49,21 @@ namespace Capstone
                 return email;
             }
         }
+        public bool IsTeacher
+        {
+            get
+            {
+                return isTeacher;
+            }
+        }
         
         //constructor for all common fields
-        public Person(string Name, string Phone, string Email)
+        public Person(string Name, string Phone, string Email, bool IsTeacher)
         {
             name = Name;
             phone = Phone;
             email = Email;
+            isTeacher = IsTeacher;
         }
         
         public void SetID(int id)
