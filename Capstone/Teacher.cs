@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
-    class Teacher : Person
+    public class Teacher : Person
     {
         //field unique to teachers
         private Courses approvedCourses;
@@ -21,8 +21,8 @@ namespace Capstone
         }
 
         //constructor calling base class for common fields and implementing unique one
-        public Teacher(string Name, string Phone, string Email, bool IsTeacher, Courses ApprovedCourses)
-            : base(Name, Phone, Email, IsTeacher)
+        public Teacher(string Name, string Phone, string Email, bool IsTeacher, List<classItem> CoursesWith, Courses ApprovedCourses)
+            : base(Name, Phone, Email, IsTeacher, CoursesWith)
         {
             approvedCourses = ApprovedCourses;
         }

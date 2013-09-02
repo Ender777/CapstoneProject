@@ -20,6 +20,7 @@ namespace Capstone
                 return people;
             }
         }
+        //TODO: see if I can move duplicate checking logic here from program.cs
         //add method for people
         public void Add(Person person)
         {

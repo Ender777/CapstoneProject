@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Capstone
 {
     //class to store classItems
-    class classCollection
+    class classCollection : IEnumerable<classItem>
     {
         //list of scheduled classes as classItems
         private List<classItem> scheduledClasses = new List<classItem>();
@@ -36,5 +36,17 @@ namespace Capstone
             ScheduledClasses.Add(ClassItem);
             scheduledClasses.Sort();
         }
+        
+        //implementing IEnumerable so I can use a foreach--------------------
+        public IEnumerator<classItem> GetEnumerator()
+        {
+            return scheduledClasses.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return scheduledClasses.GetEnumerator();
+        }
+
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Capstone
 {
     //class to hold all the courses from the database
-    class Courses:IEnumerable<Cours>
+    public class Courses:IEnumerable<Cours>
     {
         //auto generated code from edmx named it Cours instead of Course
         private List<Cours> courseCollection = new List<Cours>();

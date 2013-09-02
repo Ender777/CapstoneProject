@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
-    class Student : Person
+    public class Student : Person
     {
         //constructor calls base for all fields
-        public Student(string Name, string Phone, string Email, bool IsTeacher)
-            : base(Name, Phone, Email, IsTeacher)
+        public Student(string Name, string Phone, string Email, bool IsTeacher, List<classItem> CoursesWith)
+            : base(Name, Phone, Email, IsTeacher, CoursesWith)
         {
         }
 

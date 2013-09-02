@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
-    class classItem
+    public class classItem
     {
         //fields that make a class item
         private int itemNumber;

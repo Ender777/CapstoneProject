@@ -14,7 +14,8 @@ namespace Capstone
         private string name;
         private string phone;
         private string email;
-        private bool isTeacher; //TODO: Maybe use this as a hook to use in a foreach to cycle through only teachers or only students
+        private bool isTeacher; //use this as a hook to use in a foreach to cycle through only teachers or only students
+        private List<classItem> coursesWith; //list of courses that each student or teacher is either taking or teaching
 
         //properties
         public int ID
@@ -41,6 +42,10 @@ namespace Capstone
             {
                 return phone;
             }
+            set
+            {
+                phone = setPhoneLength();
+            }
         }
         public string Email
         {
@@ -56,22 +61,34 @@ namespace Capstone
                 return isTeacher;
             }
         }
+        public List<classItem> CoursesWith
+        {
+            get
+            {
+                return coursesWith;
+            }
+        }
         
         //constructor for all common fields
-        public Person(string Name, string Phone, string Email, bool IsTeacher)
+        public Person(string Name, string Phone, string Email, bool IsTeacher, List<classItem> CoursesWith)//TODO: need to add coursesWith somehow
         {
             name = Name;
             phone = Phone;
             email = Email;
             isTeacher = IsTeacher;
+            coursesWith = CoursesWith;
         }
         
+        //method to set the ID of each person
         public void SetID(int id)
         {
             this.ID = id;
         }
 
-        //IComparable implementation to be able to sort personCollection by Person---------------
+        //method to ensure length of phone number is correct
+        public void setPhoneLength()//TODO: Use internet bookmark to see if I can enforce length of Phone here
+
+        //IComparable implementation to be able to sort Person objects---------------
         public int CompareTo(object obj)
         {
             //cast obj into Person
