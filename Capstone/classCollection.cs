@@ -27,14 +27,28 @@ namespace Capstone
             if (ScheduledClasses.Count != 0)
             {
                 classItem highestID = ScheduledClasses.OrderByDescending(ci => ci.ItemNumber).First();
-                ClassItem.ItemNumber = highestID.ItemNumber + 1;
+                ClassItem.SetID(highestID.ItemNumber + 1);
             }
             else
             {
-                ClassItem.ItemNumber = 1;
+                ClassItem.SetID(1);
             }
             ScheduledClasses.Add(ClassItem);
             scheduledClasses.Sort();
+        }
+
+        //method to check user-generated classItem IDs for duplicates
+        public bool IDChecker(int i)
+        {
+            bool checkResult = false;
+            foreach (classItem ci in ScheduledClasses)
+            {
+                if (ci.ItemNumber.CompareTo(i) == 0)
+                {
+                    checkResult = true;
+                }
+            }
+            return checkResult;
         }
         
         //implementing IEnumerable so I can use a foreach--------------------

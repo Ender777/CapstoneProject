@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 //3. Make it savable
 //4. Checklist for features and requirements
 //5. TODOs
+//6. Error checking
 
 namespace Capstone
 {
@@ -227,44 +228,18 @@ namespace Capstone
         public static void ScheduleClass()
         {
             //declare variables to pass to classItem constructors here.
-            int numberOfCourseToSchedule = 0;
             Cours courseToSchedule = null;
             Classroom roomToSchedule = null;
             CourseTime timeToSchedule = null;
             Teacher teacherToSchedule = null;
             List<Student> studentsToSchedule = new List<Student>();
 
-            //list to hold IDs of classItems to check against
-            List<int> numberList = new List<int>();
-
             if (hasTeacher == false || hasStudent == false)//condition to check if student and teacher have been created
             {
                 Console.WriteLine("You can't schedule a class until a student and a teacher has been added.");
                 return;
             }
-            Console.WriteLine("Enter a unique number for this course");
-            string numberAnswer = Console.ReadLine();
-            int number;
-            bool numberResult = int.TryParse(numberAnswer, out number);
-            //if conversion worked, check for preexisting ID.  If not there, store value to proceed
-            if (numberResult == true)
-            {
-                if (numberList.Contains(number))
-                {
-                    Console.WriteLine("That class number has already been used.");
-                    return;
-                }
-                else
-                {
-                    numberList.Add(number);
-                    numberOfCourseToSchedule = number;
-                }
-            }
-            else
-            {
-                Console.WriteLine("input invalid, please enter a number");
-                return;
-            }
+
             //--------------------------display courses and get ID of course--------------------------------------------------
             //TODO: This needs checking to make sure desired course has an eligible teacher!
             foreach (Cours c in dm.DBCourses)
@@ -276,7 +251,7 @@ namespace Capstone
             //this part below should be a method, it would make this less lengthy
             int courseID;
             bool IDResult = int.TryParse(IDAnswer, out courseID);
-            if (numberResult == false || courseID > 14 || courseID <= 0)
+            if (IDResult == false || courseID > 14 || courseID <= 0)
             {
                 Console.WriteLine("Invalid ID entered");
                 return;
@@ -301,19 +276,31 @@ namespace Capstone
             string ClassroomAnswer = Console.ReadLine();
             int roomID;
             bool roomIDResult = int.TryParse(ClassroomAnswer, out roomID);
-            if (roomIDResult == false)//TODO: possible additional error checking for invalid room ID entries
+            if (roomIDResult == false)
             {
                 Console.WriteLine("Enter a valid course ID");
                 return;
             }
             else
             {
+                bool success = false;
+                Classroom temp = null;
                 foreach (Classroom c in courseToSchedule.Classrooms)
                 {
                     if (roomID.CompareTo(c.ClassroomID) == 0)
                     {
-                        roomToSchedule = c;
+                        success = true;
+                        temp = c;
                     }
+                }
+                if (success == true)
+                {
+                    roomToSchedule = temp;
+                }
+                else
+                {
+                    Console.WriteLine("Entry did not match a valid room ID");
+                    return;
                 }
             }
             //Start of time selection----------------TODO: This is going to need checking for time availability of room and the ability to block out a certain number of hours somehow------------------------------
@@ -454,7 +441,6 @@ namespace Capstone
             }
             //------------------start of displaying info---------------------------------------------------------------
             Console.WriteLine("\nSo here's what we have so far:");
-            Console.WriteLine("Unique class number: {0}", numberOfCourseToSchedule);
             Console.WriteLine("Course name: {0}", courseToSchedule.CourseName);
             Console.WriteLine("Teacher's ID: {0}, Teacher's name: {1}", teacherToSchedule.ID, teacherToSchedule.Name);
             Console.WriteLine("Classroom ID: {0}, Classroom number: {1}, Classroom size: {2}", roomToSchedule.ClassroomID, roomToSchedule.RoomNumber, roomToSchedule.RoomSize);
@@ -475,7 +461,7 @@ namespace Capstone
                 {
                     case "1":
                         //create new classItem passing in all needed info to create a new class.
-                        classItem newClass = new classItem(numberOfCourseToSchedule, timeToSchedule, teacherToSchedule, studentsToSchedule, roomToSchedule, courseToSchedule);
+                        classItem newClass = new classItem(timeToSchedule, teacherToSchedule, studentsToSchedule, roomToSchedule, courseToSchedule);
                         scheduledClasses.Add(newClass);
                         //register that class in each scheduled students' classItem collection
                         foreach (Student st in studentsToSchedule)

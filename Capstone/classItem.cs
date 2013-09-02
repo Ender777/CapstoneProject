@@ -23,8 +23,7 @@ namespace Capstone
             {
                 return itemNumber;
             }
-            //TODO: SHOULD THIS ONE BE PRIVATE?
-            set
+            private set
             {
                 itemNumber = value;
             }
@@ -66,14 +65,19 @@ namespace Capstone
         }
 
         //constructor
-        public classItem(int ItemNumber, CourseTime CourseTimes, Teacher Teacher, List<Student> EnrolledStudent, Classroom Room, Cours Course)
+        public classItem(CourseTime CourseTimes, Teacher Teacher, List<Student> EnrolledStudent, Classroom Room, Cours Course)
         {
-            itemNumber = ItemNumber;
             courseTimes = CourseTimes;
             teacher = Teacher;
             enrolledStudents = EnrolledStudents;
             room = Room;
             course = Course;
+        }
+
+        //method to set ID without user input
+        public void SetID(int id)
+        {
+            this.ItemNumber = id;
         }
     }
 }

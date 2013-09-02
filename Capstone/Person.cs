@@ -42,10 +42,10 @@ namespace Capstone
             {
                 return phone;
             }
-            set
-            {
-                phone = setPhoneLength();
-            }
+            //set
+            //{
+            //    phone = setPhoneLength();
+            //}
         }
         public string Email
         {
@@ -86,7 +86,7 @@ namespace Capstone
         }
 
         //method to ensure length of phone number is correct
-        public void setPhoneLength()//TODO: Use internet bookmark to see if I can enforce length of Phone here
+        //public void setPhoneLength();//TODO: Use internet bookmark to see if I can enforce length of Phone here
 
         //IComparable implementation to be able to sort Person objects---------------
         public int CompareTo(object obj)

@@ -56,7 +56,7 @@ namespace Capstone
 
             foreach (Classroom c in classroomOptions)
             {
-                dbClassrooms.Add(c);
+                DBClassrooms.Add(c);
             }
 
             //store data from db into a var and put it into capstone classes
@@ -66,7 +66,7 @@ namespace Capstone
                                             
             foreach (Cours co in courseOptions)
             {
-                dbCourses.Add(co);
+                DBCourses.Add(co);
             }
 
             var timeOptions = from times in context.CourseTimes
@@ -75,7 +75,7 @@ namespace Capstone
 
             foreach (CourseTime ct in timeOptions)
             {
-                dbTimes.Add(ct);
+                DBTimes.Add(ct);
             }
 
         }
