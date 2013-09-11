@@ -20,7 +20,6 @@ namespace Capstone
                 return people;
             }
         }
-        //TODO: see if I can move duplicate checking logic here from program.cs
         //add method for people
         public void Add(Person person)
         {
@@ -49,24 +48,5 @@ namespace Capstone
         {
             return People.GetEnumerator();
         }
-
-        //This is the implementation of IEnumerable from Jonathan's project.  Don't know why it's different.
-        //IEnumerator<Person> IEnumerable<Person>.GetEnumerator()
-        //{
-        //    if (people.Count == 0)
-        //    {
-        //        yield break;
-        //    }
-
-        //    for (int i = 0; i < people.Count; i++)
-        //    {
-        //        yield return people[i];
-        //    }
-        //}
-        ////GetEnumerator here
-        //System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        //{
-        //    throw new NotImplementedException("This Method is Not Supported");
-        //}
     }
 }

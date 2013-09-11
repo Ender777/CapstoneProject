@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 //5. TODOs
 //6. Error checking
 
+//LEFT OFF: need to test the adding student portion in the scheduling a class and fix all errors, then move on to displaying information.
+
 namespace Capstone
 {
     class Program
@@ -18,9 +20,6 @@ namespace Capstone
         static personCollection people = new personCollection();
         static databaseManager dm = new databaseManager();
         static classCollection scheduledClasses = new classCollection();
-        //static List<Classroom> classrooms;
-        //static List<CourseTime> courseTimes;
-        //static Courses courses = new Courses();
 
         //bools for if a Teacher or Student has been added has been added to people
         static bool hasTeacher = false;
@@ -83,17 +82,39 @@ namespace Capstone
         public static void AddStudent()
         {
             string name;
-            string phone; //TODO: This may need to be an int or at least have error checking for a phone NUMBER not letters
+            //phone is a string because int wasn't big enough to hold high area code numbers
+            string phone;
             string email;
-
+            //check variable used to make sure numbers are entered for a phone number.  Ints ran into upper range problems with area codes that were too high
+            long check;
             Console.Write("Enter Name\n");
-            name = Console.ReadLine();
-            Console.Write("Enter Phone number\n");
-            phone = Console.ReadLine();
+            name = Console.ReadLine().Trim();
+            Console.Write("Enter 10 digit Phone number\n");
+            //store entered data
+            string input = Console.ReadLine();
+            //checking for valid phone number length and type
+            try
+            {
+                check = Convert.ToInt64(input);
+            }
+            catch
+            {
+                Console.WriteLine("Phone number must be 10 numerical digits");
+                return;
+            }
+            if (input.ToString().Length != 10)
+            {
+                Console.WriteLine("Phone number entered is not 10 digits, please try again");
+                return;
+            }
+            else
+            {
+                phone = input;
+            }
             Console.Write("Enter Email address\n");
-            email = Console.ReadLine();
+            email = Console.ReadLine().Trim();
 
-            if (name != "" && phone != "" && email != "")
+            if (name != "" && email != "")
             {
                 //create an empty classItem list to pass to constructor to be used when scheduling classes
                 List<classItem> classesWith = new List<classItem>();
@@ -114,7 +135,7 @@ namespace Capstone
             }
             else
             {
-                Console.WriteLine("Error inputting information, please try again");
+                Console.WriteLine("One or more fields left empty, please try again");
             }
         }
 
@@ -122,17 +143,40 @@ namespace Capstone
         public static void AddTeacher()
         {
             string name;
-            string phone; //TODO: This may need to be an int or at least have error checking for a phone NUMBER not letters
+            string phone;
             string email;
             Courses approvedCourses = new Courses();
-
+            long check;
             Console.Write("Enter Name\n");
             name = Console.ReadLine();
-            Console.Write("Enter Phone number\n");
-            phone = Console.ReadLine();
+            Console.Write("Enter 10 digit Phone number\n");
+            string input = Console.ReadLine();
+            try
+            {
+                check = Convert.ToInt64(input);
+            }
+            catch
+            {
+                Console.WriteLine("Phone number must be 10 numerical digits");
+                return;
+            }
+            if (input.ToString().Length != 10)
+            {
+                Console.WriteLine("Phone number entered is not 10 digits, please try again");
+                return;
+            }
+            else
+            {
+                phone = input;
+            }
             Console.Write("Enter Email address\n");
             email = Console.ReadLine();
             //display all course options
+            if (name == "" || email == "")
+            {
+                Console.WriteLine("One or more fields left empty, please try again");
+                return;
+            }
             foreach (Cours c in dm.DBCourses)
             {
                 Console.WriteLine("Course ID: {0}\tName: {1}", c.CourseID, c.CourseName);
@@ -140,10 +184,8 @@ namespace Capstone
 
             //bool and while loop to keep adding courses until the user stops
             bool keepAdding = true;
-            //loops through all courses comparing entered ID to courseIDs.  If a match
-            //is found, bool is set to true and if statement is entered, assigning match
-            //to the list.  After this is completed, ask user if they want to add more 
-            //classes and loop again.
+            //loops through all courses comparing entered ID to courseIDs.  If a match is found, bool is set to true and if statement is entered, assigning match
+            //to the list.  After this is completed, ask user if they want to add more classes and loop again.
             while (keepAdding)
             {
                 Console.WriteLine("Enter ID of a course this teacher can teach");
@@ -162,7 +204,6 @@ namespace Capstone
                         match = true;
                         matchedCourse = c;
                     }
-                    //TODO: check if this part will break
                 }
                 if (match == true)
                 {
@@ -180,6 +221,7 @@ namespace Capstone
                 else
                 {
                     Console.WriteLine("invalid class number entered");
+                    return;
                 }
                 Console.WriteLine("Add another class?\n1...Yes\n2...No");
                 string anotherClass = Console.ReadLine();
@@ -204,6 +246,7 @@ namespace Capstone
                 if (people.Contains(t))
                 {
                     Console.WriteLine("The name, phone number, or email entered is already taken, please enter a new one");
+                    return;
                 }
                 else
                 {
@@ -236,19 +279,17 @@ namespace Capstone
 
             if (hasTeacher == false || hasStudent == false)//condition to check if student and teacher have been created
             {
-                Console.WriteLine("You can't schedule a class until a student and a teacher has been added.");
+                Console.WriteLine("You can't schedule a class until a student and a teacher have been added.");
                 return;
             }
 
             //--------------------------display courses and get ID of course--------------------------------------------------
-            //TODO: This needs checking to make sure desired course has an eligible teacher!
             foreach (Cours c in dm.DBCourses)
             {
                 Console.WriteLine("Course ID: {0}\tName: {1}", c.CourseID, c.CourseName);
             }
             Console.WriteLine("Enter the Course ID number of the course to schedule");
             string IDAnswer = Console.ReadLine();
-            //this part below should be a method, it would make this less lengthy
             int courseID;
             bool IDResult = int.TryParse(IDAnswer, out courseID);
             if (IDResult == false || courseID > 14 || courseID <= 0)
@@ -266,7 +307,63 @@ namespace Capstone
                     }
                 }
             }
+            //create a list of just teachers to scan through to make sure there's one that can teach selected course
+            List<Person> tempList = new List<Person>();
+            foreach (Person p in people)
+            {
+                if (p.IsTeacher == true)
+                {
+                    tempList.Add(p);
+                }
+            }
+            //Make sure there's a teacher in the system that can teach the course or the program will loop indefinitely later on waiting for a valid teacher input that isn't in the system
+            bool teacherExists = false;
+            foreach (Teacher t in tempList)
+            {
+                if (t.ApprovedCourses.Contains(courseToSchedule))
+                {
+                    teacherExists = true;
+                }
+            }
+            if (teacherExists == false)
+            {
+                Console.WriteLine("There is no teacher as yet able to teach this course in the system.  Unable to schedule course at this time");
+                return;
+            }
 
+            //Start of time selection--------------------------------------------------------------------------------------------------------------------------------
+            foreach (CourseTime ct in dm.DBTimes)
+            {
+                Console.WriteLine("Time ID: {0}, Timeframe: {1}", ct.TimeID, ct.TimeFrame);
+            }
+            Console.WriteLine("Select a time ID");
+            string timeAnswer = Console.ReadLine();
+            int timeID;
+            bool timeIDResult = int.TryParse(timeAnswer, out timeID);
+            if (timeIDResult == false)
+            {
+                Console.WriteLine("invalid time ID entered");
+                return;
+            }
+            else
+            {
+                //bool to determine if a match was found between input and database info
+                bool validID = false;
+                foreach (CourseTime ct in dm.DBTimes)
+                {
+                    if (timeID.CompareTo(ct.TimeID) == 0)
+                    {
+                        timeToSchedule = ct;
+                        //if match was found, set success to true
+                        validID = true;
+                    }
+                }
+                if (validID == false)
+                {
+                    Console.WriteLine("The time ID entered did not match a valid option");
+                    return;
+                }
+            }
             //Start of classroom selection---------------------TODO: This is going to need checking for room availability somehow-----------------------------------
             foreach (Classroom c in courseToSchedule.Classrooms)
             {
@@ -303,30 +400,6 @@ namespace Capstone
                     return;
                 }
             }
-            //Start of time selection----------------TODO: This is going to need checking for time availability of room and the ability to block out a certain number of hours somehow------------------------------
-            foreach (CourseTime ct in dm.DBTimes)
-            {
-                Console.WriteLine("Time ID: {0}, Timeframe: {1}", ct.TimeID, ct.TimeFrame);
-            }
-            Console.WriteLine("Select a time ID");
-            string timeAnswer = Console.ReadLine();
-            int timeID;
-            bool timeIDResult = int.TryParse(timeAnswer, out timeID);
-            if (timeIDResult == false)//TODO: possible additional error checking for invalid time ID entries
-            {
-                Console.WriteLine("Enter a valid time ID");
-                return;
-            }
-            else
-            {
-                foreach (CourseTime ct in dm.DBTimes)
-                {
-                    if (timeID.CompareTo(ct.TimeID) == 0)
-                    {
-                        timeToSchedule = ct;
-                    }
-                }
-            }
             //Start of teacher selection-----------------------------TODO: Will need to check to see if teacher is available for times----------------------------
             //temporary list of teachers to access teacher-specific approvedCourses list
             List<Person> teacherList = new List<Person>();
@@ -343,27 +416,34 @@ namespace Capstone
             {
                 if (t.ApprovedCourses.Contains(courseToSchedule))
                 {
+                    //TODO: maybe put another for loop here to check for teachers available at the course time and put the writeline in that?
                     Console.WriteLine("Teacher ID: {0}, teacher name: {1}", t.ID, t.Name);
                 }
             }
             Console.WriteLine("Enter ID of teacher to teach course");
             string teacherAnswer = Console.ReadLine();
-            //int teacher = parseInput(teacherAnswer);
             int teacherID;
             bool teacherIDResult = int.TryParse(teacherAnswer, out teacherID);
-            if (teacherIDResult == false)//TODO: possible additional error checking for invalid teacher ID entries
+            if (teacherIDResult == false)
             {
                 Console.WriteLine("Enter a valid teacher ID");
                 return;
             }
             else
             {
+                bool validID = false;
                 foreach (Teacher t in teacherList)
                 {
                     if (teacherID.CompareTo(t.ID) == 0)
                     {
                         teacherToSchedule = t;
+                        validID = true;
                     }
+                }
+                if (validID == false)
+                {
+                    Console.WriteLine("Entry did not match a valid teacher ID");
+                    return;
                 }
             }
             //Start of student selection-----------------------------TODO: will need to check to see if students are available for times------------------------------
@@ -386,7 +466,7 @@ namespace Capstone
             }
             //while loop so we can add as many students as desired
             bool moreStudents = true;
-            while (moreStudents == true)
+            while (moreStudents == true && studentList.Capacity <= roomToSchedule.RoomSize)
             {
                 Console.WriteLine("Enter ID of a student to take course");
                 string studentAnswer = Console.ReadLine();

@@ -42,10 +42,6 @@ namespace Capstone
             {
                 return phone;
             }
-            //set
-            //{
-            //    phone = setPhoneLength();
-            //}
         }
         public string Email
         {
@@ -70,7 +66,7 @@ namespace Capstone
         }
         
         //constructor for all common fields
-        public Person(string Name, string Phone, string Email, bool IsTeacher, List<classItem> CoursesWith)//TODO: need to add coursesWith somehow
+        public Person(string Name, string Phone, string Email, bool IsTeacher, List<classItem> CoursesWith)
         {
             name = Name;
             phone = Phone;
