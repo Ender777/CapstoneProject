@@ -24,6 +24,7 @@ namespace Capstone
         //bools for if a Teacher or Student has been added has been added to people
         static bool hasTeacher = false;
         static bool hasStudent = false;
+        static bool hasClass = false;
 
         static void Main(string[] args)
         {
@@ -223,7 +224,7 @@ namespace Capstone
                     Console.WriteLine("invalid class number entered");
                     return;
                 }
-                Console.WriteLine("Add another class?\n1...Yes\n2...No");
+                Console.WriteLine("Can this teacher teach another course?\n1...Yes\n2...No");
                 string anotherClass = Console.ReadLine();
                 switch (anotherClass)
                 {
@@ -449,8 +450,6 @@ namespace Capstone
             //Start of student selection-----------------------------TODO: will need to check to see if students are available for times------------------------------
             //temporary list of students to be able to manipulate only students
             List<Person> studentList = new List<Person>();
-            //keeps the list of students below at or below the maximum as determined by the roomsize
-            studentList.Capacity = roomToSchedule.RoomSize;
             //populate studentList with only students
             foreach (Person p in people)
             {
@@ -464,43 +463,49 @@ namespace Capstone
             {
                 Console.WriteLine("Student ID: {0}, student name: {1}", p.ID, p.Name);
             }
+            Console.WriteLine("Classroom selected can have {0} students", roomToSchedule.RoomSize);
             //while loop so we can add as many students as desired
             bool moreStudents = true;
-            while (moreStudents == true && studentList.Capacity <= roomToSchedule.RoomSize)
+            while (moreStudents == true && studentsToSchedule.Count <= roomToSchedule.RoomSize)
             {
                 Console.WriteLine("Enter ID of a student to take course");
                 string studentAnswer = Console.ReadLine();
                 int studentID;
                 bool studentIDResult = int.TryParse(studentAnswer, out studentID);
-                if (studentIDResult == false)//TODO: possible additional error checking for invalid student ID entries
+                if (studentIDResult == false)
                 {
-                    Console.WriteLine("Enter a valid student ID");
-                    return;
+                    Console.WriteLine("Invalid entry");
                 }
                 else
                 {
                     bool success = false;
                     foreach (Student s in studentList)
                     {
-                        //if input matches a valid student AND isnt' already in the studentsToSchedule list, add him/her
-                        if (studentID.CompareTo(s.ID) == 0 && studentsToSchedule.Contains(s) == false)
+                        //if input matches a valid student AND isn't already in the studentsToSchedule list, add him/her
+                        if (studentID.CompareTo(s.ID) == 0)// && studentsToSchedule.Contains(s) == false)
                         {
-                            studentsToSchedule.Add(s);
-                            Console.WriteLine("{0} added successfully!", s.Name);
-                            success = true;
+                            if (studentsToSchedule.Contains(s) == false)
+                            {
+                                studentsToSchedule.Add(s);
+                                Console.WriteLine("{0} added successfully!", s.Name);
+                                success = true;
+                            }
+                            else
+                            {
+                                Console.WriteLine("This student has already been added to this class");
+                            }
                         }
                     }
                     if (success == false)
                     {
                         Console.WriteLine("Invalid ID entered, student not added");
-                        return;
                     }
-                    Console.WriteLine("{0} students in this class out of a possible {1}.  Add another student?\n1...Yes\n2...No", studentsToSchedule.Count, studentList.Capacity);
+                    Console.WriteLine("{0} students in this class out of a possible {1}.  Add another student?\n1...Yes\n2...No", studentsToSchedule.Count, roomToSchedule.RoomSize);
                     string answer = Console.ReadLine();
                     switch (answer)
                     {
                         case "1":
-                            if (studentsToSchedule.Count == studentList.Capacity)
+                            if (studentsToSchedule.Count >= roomToSchedule.RoomSize)
                             {
                                 Console.WriteLine("Class is full, no more students will be enrolled.");
                                 moreStudents = false;
@@ -514,7 +519,7 @@ namespace Capstone
                             moreStudents = false;
                             break;
                         default:
-                            Console.WriteLine("Invalid input, please try again");
+                            Console.WriteLine("Invalid input");
                             break;
                     }
                 }
@@ -533,7 +538,7 @@ namespace Capstone
             //double check info is correct and scheduling is desired
             Console.WriteLine("Would you like to schedule this class?\n1...Yes\n2...No");
             string scheduleClass = Console.ReadLine();
-            //if yes, schedule class, if no, delete data and start over
+            //if yes, schedule class, if no, start over
             bool addClass = true;
             while (addClass == true)
             {
@@ -551,6 +556,7 @@ namespace Capstone
                         //register class in the teachers classItem collection
                         teacherToSchedule.CoursesWith.Add(newClass);
                         Console.WriteLine("Class successfully added!");
+                        hasClass = true;
                         addClass = false;
                         break;
                     case "2":
@@ -559,6 +565,7 @@ namespace Capstone
                         break;
                     default:
                         Console.WriteLine("Invalid input, please try again");
+                        scheduleClass = Console.ReadLine();
                         break;
                 }
             }
@@ -579,6 +586,11 @@ namespace Capstone
             switch (choice)
             {
                 case "1":
+                    if (hasStudent == false)
+                    {
+                        Console.WriteLine("No students have been added, add a student first!");
+                        return;
+                    }
                     //display all students
                     foreach (Person p in people)
                     {
@@ -605,6 +617,10 @@ namespace Capstone
                                     infoStudent = (Student)p;
                                 }
                             }
+                            if (infoStudent == null)
+                            { 
+                                Console.WriteLine("Invalid entry, please try again"); 
+                            }
                         }
                         catch
                         {
@@ -616,6 +632,11 @@ namespace Capstone
                     displayStudentInfo(infoStudent);
                     break;
                 case "2":
+                    if (hasTeacher == false)
+                    {
+                        Console.WriteLine("No teachers have been added, add a teacher first!");
+                        return;
+                    }
                     //display all teachers
                     foreach (Person p in people)
                     {
@@ -636,21 +657,30 @@ namespace Capstone
                             int teacherIDint = int.Parse(teacherID);
                             foreach (Person p in people)
                             {
-                                if (teacherID.CompareTo(p.ID) == 0)
+                                if (teacherIDint.CompareTo(p.ID) == 0)
                                 {
                                     infoTeacher = (Teacher)p;
                                 }
                             }
+                            if (infoTeacher == null)
+                            {
+                                Console.WriteLine("Invalid entry please try again");
+                            }
                         }
                         catch
                         {
-                            Console.WriteLine("Invalid ID entered");
+                            Console.WriteLine("Invalid ID entered, enter a valid ID");
                         }
                     }
                     displayPersonInfo(infoTeacher);
                     displayTeacherInfo(infoTeacher);
                     break;
                 case "3":
+                    if (hasClass == false)
+                    {
+                        Console.WriteLine("No classes have been scheduled in any rooms yet, schedule a class first!");
+                        return;
+                    }
                     foreach (Classroom c in dm.DBClassrooms)
                     {
                         Console.WriteLine("Room ID: {0}, Room number: {1}", c.ClassroomID, c.RoomNumber);
@@ -666,7 +696,7 @@ namespace Capstone
                             int roomIDint = int.Parse(roomID);
                             foreach (Classroom c in dm.DBClassrooms)
                             {
-                                if (roomID.CompareTo(c.ClassroomID) == 0)
+                                if (roomIDint.CompareTo(c.ClassroomID) == 0)
                                 {
                                     infoRoom = c;
                                 }
@@ -680,6 +710,11 @@ namespace Capstone
                     displayClassroomInfo(infoRoom);
                     break;
                 case "4":
+                    if (hasClass ==false)
+                    {
+                        Console.WriteLine("No classes have been scheduled yet, schedule a class first!");
+                        return;
+                    }
                     foreach (classItem ci in scheduledClasses)
                     {
                         Console.WriteLine("Item number: {0}, Course name: {1}", ci.ItemNumber, ci.Course.CourseName);
@@ -694,10 +729,14 @@ namespace Capstone
                             int classIDint = int.Parse(classID);
                             foreach (classItem ci in scheduledClasses)
                             {
-                                if (classID.CompareTo(ci.ItemNumber) == 0)
+                                if (classIDint.CompareTo(ci.ItemNumber) == 0)
                                 {
                                     infoClass = ci;
                                 }
+                            }
+                            if (infoClass == null)
+                            {
+                                Console.WriteLine("Invalid entry please try again");
                             }
                         }
                         catch
@@ -722,21 +761,21 @@ namespace Capstone
         //displays student-specific information
         public static void displayStudentInfo(Student s)
         {
-            if (s.CoursesWith == null)
+            if (s.CoursesWith.Count == 0)
             { Console.WriteLine("Student is not enrolled in any classes"); }
             else
             {
                 Console.WriteLine("Information regarding courses this student is taking:");
                 foreach (classItem ci in s.CoursesWith)
                 {
-                    Console.WriteLine("\tCourse name: {0}, Teacher name: {1}, Classroom number: {2}, Course time: {3}", ci.Course.CourseName, ci.Teacher.Name, ci.Room.RoomNumber, ci.CourseTimes.TimeFrame);
+                    Console.WriteLine("\tCourse name: {0}\n\tTeacher name: {1}\n\tClassroom number: {2}\n\tCourse time: {3}", ci.Course.CourseName, ci.Teacher.Name, ci.Room.RoomNumber, ci.CourseTimes.TimeFrame);
                 }
             }
         }
         //displays teacher-specific information
         public static void displayTeacherInfo(Teacher t)
         {
-            if (t.CoursesWith == null)
+            if (t.CoursesWith.Count == 0)
             { Console.WriteLine("Teacher is not scheduled to teach any classes"); }
             else
             {
@@ -748,7 +787,7 @@ namespace Capstone
                 Console.WriteLine("Information regarding courses this teacher is teaching:");
                 foreach (classItem ci in t.CoursesWith)
                 {
-                    Console.WriteLine("\tCourse name: {0}, Classroom number: {1}, Course time: {2}, Number of students registered {3}", ci.Course.CourseName, ci.Room.RoomNumber, ci.CourseTimes.TimeFrame, ci.EnrolledStudents.Count.ToString());
+                    Console.WriteLine("\tCourse name: {0}\n\tClassroom number: {1}\n\tCourse time: {2}\n\tNumber of students registered: {3}", ci.Course.CourseName, ci.Room.RoomNumber, ci.CourseTimes.TimeFrame, ci.EnrolledStudents.Count);
                 }
             }
         }
@@ -765,7 +804,7 @@ namespace Capstone
         //displays course information
         public static void displayCourseInfo(classItem ci)
         {
-            Console.WriteLine("ID: {0}, Course name: {1}, Teacher's ID: {2}, Teacher's name: {3}, Classroom ID: {4}, Classroom number: {5}, Classroom size: {6}, Course time: {7}", ci.ItemNumber, ci.Course.CourseName, ci.Teacher.ID, ci.Teacher.Name, ci.Room.ClassroomID, ci.Room.RoomNumber, ci.Room.RoomSize, ci.CourseTimes.TimeFrame);
+            Console.WriteLine("ID: {0}, Course name: {1}\nTeacher's ID: {2}\nTeacher's name: {3}\nClassroom ID: {4}\nClassroom number: {5}\nClassroom size: {6}\nCourse time: {7}", ci.ItemNumber, ci.Course.CourseName, ci.Teacher.ID, ci.Teacher.Name, ci.Room.ClassroomID, ci.Room.RoomNumber, ci.Room.RoomSize, ci.CourseTimes.TimeFrame);
             Console.WriteLine("Students enrolled:");
             foreach (Student s in ci.EnrolledStudents)
             {

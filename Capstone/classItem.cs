@@ -65,7 +65,7 @@ namespace Capstone
         }
 
         //constructor
-        public classItem(CourseTime CourseTimes, Teacher Teacher, List<Student> EnrolledStudent, Classroom Room, Cours Course)
+        public classItem(CourseTime CourseTimes, Teacher Teacher, List<Student> EnrolledStudents, Classroom Room, Cours Course)
         {
             courseTimes = CourseTimes;
             teacher = Teacher;
