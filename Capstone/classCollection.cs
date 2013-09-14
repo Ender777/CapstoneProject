@@ -34,7 +34,7 @@ namespace Capstone
                 ClassItem.SetID(1);
             }
             ScheduledClasses.Add(ClassItem);
-            scheduledClasses.Sort();
+            //scheduledClasses.Sort(); TODO: This broke after 1 teacher had 2 classes to teach, fix this
         }
 
         //TODO: determine if I can delete this

@@ -46,7 +46,7 @@ namespace Capstone
             }
         }
 
-        //Method to connection to SQL Server info and retrieve data
+        //Method to connect to SQL Server info and retrieve data
         public void ConnectToSQL()
         {
             //store data from db into a var and put it into capstone classes

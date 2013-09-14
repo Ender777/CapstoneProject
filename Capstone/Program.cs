@@ -9,13 +9,20 @@ using System.Threading.Tasks;
 //4. Checklist for features and requirements
 //5. TODOs
 //6. Error checking
-
-//LEFT OFF: need to test the adding student portion in the scheduling a class and fix all errors, then move on to displaying information.
-
+//7. Add a check for classes that are longer than an hour to not schedule those in the last time slot, or 2 time slots if they last 3 hours.
 namespace Capstone
 {
     class Program
     {
+        ///foreach (t.coursesWith)
+        ///{templist.add(t)}
+        ///foreach(Cours.Coursetime ct in templist)
+        ///if(ct.compareTo(dm.DBTimes)!=0)
+        ///{templist2.add(ct)}
+        ///
+        ///console.writeline([all other coursetimes])
+
+
         //create instances of items needed
         static personCollection people = new personCollection();
         static databaseManager dm = new databaseManager();
@@ -29,8 +36,7 @@ namespace Capstone
         static void Main(string[] args)
         {
             Console.WriteLine("Loading...");
-            //create and call databaseManager to load data from db upon startup
-            //databaseManager dm = new databaseManager();
+            //Call the method to load the database manager with info
             dm.ConnectToSQL();
             Console.WriteLine("Welcome to the program!");
             //while loop to keep program going
@@ -86,7 +92,7 @@ namespace Capstone
             //phone is a string because int wasn't big enough to hold high area code numbers
             string phone;
             string email;
-            //check variable used to make sure numbers are entered for a phone number.  Ints ran into upper range problems with area codes that were too high
+            //check variable used to make sure numbers are entered for a phone number.  Ints ran into upper range problems with area codes that were too high so I used longs.
             long check;
             Console.Write("Enter Name\n");
             name = Console.ReadLine().Trim();
@@ -332,7 +338,7 @@ namespace Capstone
                 return;
             }
 
-            //Start of time selection--------------------------------------------------------------------------------------------------------------------------------
+            //Start of time selection-------------------------------------------------------------TODO: test whether a number can be entered that is not in the scope of options-------------------------------------------------------------------
             foreach (CourseTime ct in dm.DBTimes)
             {
                 Console.WriteLine("Time ID: {0}, Timeframe: {1}", ct.TimeID, ct.TimeFrame);
@@ -344,6 +350,16 @@ namespace Capstone
             if (timeIDResult == false)
             {
                 Console.WriteLine("invalid time ID entered");
+                return;
+            }
+            else if (courseToSchedule.HoursPerSession == 2 && timeID == 14)
+            {
+                Console.WriteLine("Scheduling a 2 hour class at that time is too late");
+                return;
+            }
+            else if (courseToSchedule.HoursPerSession == 3 && (timeID == 13 || timeID == 14))
+            {
+                Console.WriteLine("Scheduling a 3 hour class at that time is too late");
                 return;
             }
             else
@@ -401,7 +417,7 @@ namespace Capstone
                     return;
                 }
             }
-            //Start of teacher selection-----------------------------TODO: Will need to check to see if teacher is available for times----------------------------
+            //Start of teacher selection---------------------------------------------------------------------------------------------------------
             //temporary list of teachers to access teacher-specific approvedCourses list
             List<Person> teacherList = new List<Person>();
             //filters teachers out into list to compare to
@@ -412,14 +428,28 @@ namespace Capstone
                     teacherList.Add(p);
                 }
             }
-            //checks each teacher's list of approved courses and prints that teacher if eligible to teach the course
+            bool validTeacher = false;
             foreach (Teacher t in teacherList)
             {
+                //checks each teacher's list of approved courses
                 if (t.ApprovedCourses.Contains(courseToSchedule))
                 {
-                    //TODO: maybe put another for loop here to check for teachers available at the course time and put the writeline in that?
-                    Console.WriteLine("Teacher ID: {0}, teacher name: {1}", t.ID, t.Name);
+                    //checks if those teachers that can teach the course are already teaching at that time
+                    if (t.TimesUsed.Contains(timeToSchedule))
+                    {
+                        Console.WriteLine("{0} is already scheduled during that time", t.Name);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Teacher ID: {0}, teacher name: {1}", t.ID, t.Name);
+                        validTeacher = true;
+                    }
                 }
+            }
+            if (validTeacher == false)
+            {
+                Console.WriteLine("No teachers entered are able to teach at the time selected");
+                return;
             }
             Console.WriteLine("Enter ID of teacher to teach course");
             string teacherAnswer = Console.ReadLine();
@@ -458,10 +488,25 @@ namespace Capstone
                     studentList.Add(p);
                 }
             }
+            bool validStudent = false;
             //display students' data
-            foreach (Person p in studentList)
+            foreach (Student s in studentList)
             {
-                Console.WriteLine("Student ID: {0}, student name: {1}", p.ID, p.Name);
+                //checks if students are already taking a class at that time
+                if (s.TimesUsed.Contains(timeToSchedule))
+                {
+                    Console.WriteLine("{0} is already scheduled during that time", s.Name);
+                }
+                else
+                {
+                    Console.WriteLine("Student ID: {0}, student name: {1}", s.ID, s.Name);
+                    validStudent = true;
+                }
+            }
+            if (validStudent == false)
+            {
+                Console.WriteLine("There are no students that can take this class at this time");
+                return;
             }
             Console.WriteLine("Classroom selected can have {0} students", roomToSchedule.RoomSize);
             //while loop so we can add as many students as desired
@@ -529,7 +574,7 @@ namespace Capstone
             Console.WriteLine("Course name: {0}", courseToSchedule.CourseName);
             Console.WriteLine("Teacher's ID: {0}, Teacher's name: {1}", teacherToSchedule.ID, teacherToSchedule.Name);
             Console.WriteLine("Classroom ID: {0}, Classroom number: {1}, Classroom size: {2}", roomToSchedule.ClassroomID, roomToSchedule.RoomNumber, roomToSchedule.RoomSize);
-            Console.WriteLine("Course time: {0}", timeToSchedule.TimeFrame);
+            Console.WriteLine("Course time: {0} - {1}", timeToSchedule.StartTime.ToString(), timeToSchedule.EndTime.ToString());
             Console.WriteLine("Students enrolled:");
             foreach (Student s in studentsToSchedule)
             {
@@ -548,13 +593,29 @@ namespace Capstone
                         //create new classItem passing in all needed info to create a new class.
                         classItem newClass = new classItem(timeToSchedule, teacherToSchedule, studentsToSchedule, roomToSchedule, courseToSchedule);
                         scheduledClasses.Add(newClass);
-                        //register that class in each scheduled students' classItem collection
-                        foreach (Student st in studentsToSchedule)
-                        {
-                            st.CoursesWith.Add(newClass);
-                        }
-                        //register class in the teachers classItem collection
+                        //register class in the teacher's classItem collection
                         teacherToSchedule.CoursesWith.Add(newClass);
+
+                        //register time used in the teacher's and students' coursetime collection
+                        int ID = timeToSchedule.TimeID;
+                        CourseTime usedTime = null;
+                        //for loop to increment time ID equal to the number of hours in the class session
+                        for (int i = 0; i < courseToSchedule.HoursPerSession; i++)
+                        {
+                            foreach (CourseTime ct in dm.DBTimes)
+                            {
+                                if (ID == ct.TimeID)
+                                {
+                                    usedTime = ct;
+                                }
+                            }
+                            teacherToSchedule.TimesUsed.Add(usedTime);
+                            foreach (Student st in studentsToSchedule)
+                            {
+                                st.TimesUsed.Add(usedTime);
+                            }
+                            ID++;
+                        }
                         Console.WriteLine("Class successfully added!");
                         hasClass = true;
                         addClass = false;
@@ -618,8 +679,8 @@ namespace Capstone
                                 }
                             }
                             if (infoStudent == null)
-                            { 
-                                Console.WriteLine("Invalid entry, please try again"); 
+                            {
+                                Console.WriteLine("Invalid entry, please try again");
                             }
                         }
                         catch
@@ -710,7 +771,7 @@ namespace Capstone
                     displayClassroomInfo(infoRoom);
                     break;
                 case "4":
-                    if (hasClass ==false)
+                    if (hasClass == false)
                     {
                         Console.WriteLine("No classes have been scheduled yet, schedule a class first!");
                         return;

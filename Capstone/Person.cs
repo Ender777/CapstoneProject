@@ -9,6 +9,9 @@ namespace Capstone
     //parent class for Student and Teacher
     public abstract class Person : IComparable, IEquatable<Person>
     {
+        //I think I need this to be able to set times for everyone?
+        databaseManager dm = new databaseManager();
+
         //fields common to Student and Teacher classes
         private int id;
         private string name;
@@ -16,6 +19,7 @@ namespace Capstone
         private string email;
         private bool isTeacher; //use this as a hook to use in a foreach to cycle through only teachers or only students
         private List<classItem> coursesWith; //list of courses that each student or teacher is either taking or teaching
+        private List<CourseTime> timesUsed; //list of course times check off used ones and compare against
 
         //properties
         public int ID
@@ -64,6 +68,17 @@ namespace Capstone
                 return coursesWith;
             }
         }
+        public List<CourseTime> TimesUsed
+        {
+            get
+            {
+                return timesUsed;
+            }
+            private set
+            {
+                timesUsed = value;
+            }
+        }
         
         //constructor for all common fields
         public Person(string Name, string Phone, string Email, bool IsTeacher, List<classItem> CoursesWith)
@@ -81,8 +96,12 @@ namespace Capstone
             this.ID = id;
         }
 
-        //method to ensure length of phone number is correct
-        //public void setPhoneLength();//TODO: Use internet bookmark to see if I can enforce length of Phone here
+        //I think this allows me to call this method when I add people to set course times for all people?
+        public void SetTimes()
+        {
+            dm.ConnectToSQL();
+            this.TimesUsed = dm.DBTimes;
+        }
 
         //IComparable implementation to be able to sort Person objects---------------
         public int CompareTo(object obj)

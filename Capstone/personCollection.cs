@@ -29,11 +29,13 @@ namespace Capstone
                 Person highestID = People.OrderByDescending(p => p.ID).First();
                 person.SetID(highestID.ID + 1);
             }
-            //if first person entered, add person
+            //if first person entered, add person with ID set to 1
             else
             {
                 person.SetID(1);
             }
+            //I think this line is adding in the coursetimes for each person?
+            person.SetTimes();
             People.Add(person);
             People.Sort();
         }
