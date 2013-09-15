@@ -3,26 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//Still to do:    1. Add coursetimes collections to Person and Classroom and somehow schedule things when they aren't in use.
-//2. Finish the displaying of the desired information.  Need times to work properly to do any more on this.
+//Still to do:
 //3. Make it savable
-//4. Checklist for features and requirements
 //5. TODOs
 //6. Error checking
-//7. Add a check for classes that are longer than an hour to not schedule those in the last time slot, or 2 time slots if they last 3 hours.
 namespace Capstone
 {
     class Program
     {
-        ///foreach (t.coursesWith)
-        ///{templist.add(t)}
-        ///foreach(Cours.Coursetime ct in templist)
-        ///if(ct.compareTo(dm.DBTimes)!=0)
-        ///{templist2.add(ct)}
-        ///
-        ///console.writeline([all other coursetimes])
-
-
         //create instances of items needed
         static personCollection people = new personCollection();
         static databaseManager dm = new databaseManager();
@@ -338,7 +326,7 @@ namespace Capstone
                 return;
             }
 
-            //Start of time selection-------------------------------------------------------------TODO: test whether a number can be entered that is not in the scope of options-------------------------------------------------------------------
+            //Start of time selection--------------------------------------------------------------------------------------------------------------------------------
             foreach (CourseTime ct in dm.DBTimes)
             {
                 Console.WriteLine("Time ID: {0}, Timeframe: {1}", ct.TimeID, ct.TimeFrame);
@@ -381,10 +369,26 @@ namespace Capstone
                     return;
                 }
             }
-            //Start of classroom selection---------------------TODO: This is going to need checking for room availability somehow-----------------------------------
+            //Start of classroom selection--------------------------------------------------------
+            bool validRoom = false;
             foreach (Classroom c in courseToSchedule.Classrooms)
             {
-                Console.WriteLine("Classroom ID: {0}, Classroom Number: {1}, Maximum students: {2}", c.ClassroomID, c.RoomNumber, c.RoomSize);
+
+                //checks if those teachers that can teach the course are already teaching at that time
+                if (c.TimesUsed.Contains(timeToSchedule))
+                {
+                    Console.WriteLine("{0} is already scheduled during that time", c.RoomNumber);
+                }
+                else
+                {
+                    Console.WriteLine("Classroom ID: {0}, Classroom Number: {1}, Maximum students: {2}", c.ClassroomID, c.RoomNumber, c.RoomSize); 
+                    validRoom = true;
+                }
+            }
+            if (validRoom == false)
+            {
+                Console.WriteLine("No rooms are available for the time selected");
+                return;
             }
             Console.WriteLine("Enter classroom ID");
             string ClassroomAnswer = Console.ReadLine();
@@ -428,6 +432,7 @@ namespace Capstone
                     teacherList.Add(p);
                 }
             }
+            teacherList.Sort();
             bool validTeacher = false;
             foreach (Teacher t in teacherList)
             {
@@ -477,7 +482,7 @@ namespace Capstone
                     return;
                 }
             }
-            //Start of student selection-----------------------------TODO: will need to check to see if students are available for times------------------------------
+            //Start of student selection-----------------------------------------------------------
             //temporary list of students to be able to manipulate only students
             List<Person> studentList = new List<Person>();
             //populate studentList with only students
@@ -488,6 +493,7 @@ namespace Capstone
                     studentList.Add(p);
                 }
             }
+            studentList.Sort();
             bool validStudent = false;
             //display students' data
             foreach (Student s in studentList)
@@ -571,10 +577,11 @@ namespace Capstone
             }
             //------------------start of displaying info---------------------------------------------------------------
             Console.WriteLine("\nSo here's what we have so far:");
+            Console.WriteLine("Course ID number: {0}", courseToSchedule.CourseID);
             Console.WriteLine("Course name: {0}", courseToSchedule.CourseName);
             Console.WriteLine("Teacher's ID: {0}, Teacher's name: {1}", teacherToSchedule.ID, teacherToSchedule.Name);
             Console.WriteLine("Classroom ID: {0}, Classroom number: {1}, Classroom size: {2}", roomToSchedule.ClassroomID, roomToSchedule.RoomNumber, roomToSchedule.RoomSize);
-            Console.WriteLine("Course time: {0} - {1}", timeToSchedule.StartTime.ToString(), timeToSchedule.EndTime.ToString());
+            Console.WriteLine("Course time: {0}", timeToSchedule.StartTime.ToString());
             Console.WriteLine("Students enrolled:");
             foreach (Student s in studentsToSchedule)
             {
@@ -609,6 +616,7 @@ namespace Capstone
                                     usedTime = ct;
                                 }
                             }
+                            roomToSchedule.TimesUsed.Add(usedTime);
                             teacherToSchedule.TimesUsed.Add(usedTime);
                             foreach (Student st in studentsToSchedule)
                             {
@@ -856,11 +864,20 @@ namespace Capstone
         public static void displayClassroomInfo(Classroom c)
         {
             Console.WriteLine("ID: {0}, Room number: {1}, Room size: {2}", c.ClassroomID, c.RoomNumber, c.RoomSize);
-            //TODO: fill this out once I get the courseTimes thing figured out correctly
-            //foreach()
-            //{
-
-            //}
+            Console.WriteLine("Information regarding courses scheduled in this room:");
+            bool classWasScheduled = false;
+            foreach(classItem ci in scheduledClasses)
+            {
+                if (c.ClassroomID.Equals(ci.Room.ClassroomID))
+                {
+                    Console.WriteLine("\tCourse name: {0}\n\tTeacher name: {1}\n\tNumber of students enrolled: {2}", ci.Course.CourseName, ci.Teacher.Name, ci.EnrolledStudents.Count);
+                    classWasScheduled = true;
+                }
+            }
+            if (classWasScheduled == false)
+            {
+                Console.WriteLine("No courses have been scheduled in this room");
+            }
         }
         //displays course information
         public static void displayCourseInfo(classItem ci)

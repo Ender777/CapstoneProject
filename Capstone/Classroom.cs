@@ -25,4 +25,37 @@ namespace Capstone
     
         public virtual ICollection<Cours> Courses { get; set; }
     }
+
+//------------------------------------------------------------------------------
+// <manually-generated>
+//    This code was generated from fingertips and brainpower.
+//
+//    Manual changes to this file may cause required behavior in your application.
+//    Manual changes to this file will disappear if the code is regenerated.
+// </manually generated>
+//------------------------------------------------------------------------------
+
+
+    public partial class Classroom
+    {
+        databaseManager dm = new databaseManager();
+
+        private List<CourseTime> timesUsed;
+
+        public List<CourseTime> TimesUsed
+        {
+            get
+            {
+                return timesUsed;
+            }
+            private set
+            {
+                timesUsed = value;
+            }
+        }
+        public void SetTimes()
+        {
+            this.TimesUsed = dm.DBTimes;
+        }
+    }
 }

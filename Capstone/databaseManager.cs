@@ -56,6 +56,8 @@ namespace Capstone
 
             foreach (Classroom c in classroomOptions)
             {
+                //calls method in partial classroom.cs to instantiate all classrooms with an empty CourseTimes list to check against for availability
+                c.SetTimes();
                 DBClassrooms.Add(c);
             }
 

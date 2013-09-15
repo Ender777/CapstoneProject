@@ -34,23 +34,8 @@ namespace Capstone
                 ClassItem.SetID(1);
             }
             ScheduledClasses.Add(ClassItem);
-            //scheduledClasses.Sort(); TODO: This broke after 1 teacher had 2 classes to teach, fix this
+            scheduledClasses.Sort();
         }
-
-        //TODO: determine if I can delete this
-        //method to check user-generated classItem IDs for duplicates
-        //public bool IDChecker(int i)
-        //{
-        //    bool checkResult = false;
-        //    foreach (classItem ci in ScheduledClasses)
-        //    {
-        //        if (ci.ItemNumber.CompareTo(i) == 0)
-        //        {
-        //            checkResult = true;
-        //        }
-        //    }
-        //    return checkResult;
-        //}
         
         //implementing IEnumerable so I can use a foreach--------------------
         public IEnumerator<classItem> GetEnumerator()
@@ -62,6 +47,5 @@ namespace Capstone
         {
             return scheduledClasses.GetEnumerator();
         }
-
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
-    public class classItem
+    public class classItem: IComparable
     {
         //fields that make a class item
         private int itemNumber;
@@ -79,5 +79,24 @@ namespace Capstone
         {
             this.ItemNumber = id;
         }
+
+        //IComparable implementation to be able to sort classItem objects---------------
+        public int CompareTo(object obj)
+        {
+            //cast obj into Person
+            classItem ci = (classItem)obj;
+            int result = 0;
+            //make sure the passed value is not null
+            if (ci != null)
+            {
+                result = ci.ItemNumber.CompareTo(this.ItemNumber);
+            }
+            else
+            {
+                Console.WriteLine("CompareTo Method failed");
+            }
+            return result;
+        }
+
     }
 }
