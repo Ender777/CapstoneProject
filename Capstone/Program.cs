@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 //Still to do:
 //3. Make it savable
 //5. TODOs
 //6. Error checking
 namespace Capstone
 {
+    [Serializable]
     class Program
     {
         //create instances of items needed
@@ -24,6 +27,17 @@ namespace Capstone
         static void Main(string[] args)
         {
             Console.WriteLine("Loading...");
+            //Try to call method to check for serialized data and load it if it exists
+            try
+            {
+                loadPeopleSerializedData("people.dat");
+                loadScheduledClassSerializedData("scheduledClasses.dat");
+            }
+            catch
+            {
+                Console.WriteLine("Didn't work");
+            }
+
             //Call the method to load the database manager with info
             dm.ConnectToSQL();
             Console.WriteLine("Welcome to the program!");
@@ -35,7 +49,7 @@ namespace Capstone
                 DisplayMenu();
                 //get choice
                 string choice = Console.ReadLine();
-
+                //Call method defined below based on choice input
                 switch (choice)
                 {
                     case "1":
@@ -51,7 +65,9 @@ namespace Capstone
                         lookUpInfo();
                         break;
                     case "5":
-                        Console.WriteLine("Closing...");
+                        Console.WriteLine("saving...");
+                        saveAndQuit(people, "people.dat");
+                        saveAndQuit(scheduledClasses, "scheduledClasses.dat");
                         programRunning = false;
                         break;
                     default:
@@ -61,7 +77,6 @@ namespace Capstone
             }
         }
 
-        //helper methods
         //method to display the main options
         public static void DisplayMenu()
         {
@@ -76,6 +91,7 @@ namespace Capstone
         //=====================================================method to add student==================================================
         public static void AddStudent()
         {
+            //variables for inputting students' info
             string name;
             //phone is a string because int wasn't big enough to hold high area code numbers
             string phone;
@@ -85,7 +101,7 @@ namespace Capstone
             Console.Write("Enter Name\n");
             name = Console.ReadLine().Trim();
             Console.Write("Enter 10 digit Phone number\n");
-            //store entered data
+            //store input data
             string input = Console.ReadLine();
             //checking for valid phone number length and type
             try
@@ -887,6 +903,36 @@ namespace Capstone
             foreach (Student s in ci.EnrolledStudents)
             {
                 Console.WriteLine("\tID: {0}, Name: {1}", s.ID, s.Name);
+            }
+        }
+        //save and quit method definition
+        static void saveAndQuit(object objGraph, string fileName)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (Stream fstream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                
+                bf.Serialize(fstream, objGraph);
+            }
+        }
+        //method to load serialized people data
+        static void loadPeopleSerializedData(string fileName)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (Stream fstream = File.OpenRead(fileName))
+            {
+                personCollection p = (personCollection)bf.Deserialize(fstream);
+                people = p;
+            }
+        }
+        //method to load serialized scheduled class data
+        static void loadScheduledClassSerializedData(string fileName)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (Stream fstream = File.OpenRead(fileName))
+            {
+                classCollection cc = (classCollection)bf.Deserialize(fstream);
+                scheduledClasses = cc;
             }
         }
     }

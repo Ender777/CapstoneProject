@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
+    [Serializable]
     public class Student : Person
     {
         //constructor calls base for all fields

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
+    [Serializable]
     //parent class for Student and Teacher
     public abstract class Person : IComparable, IEquatable<Person>
     {

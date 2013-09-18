@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
+    [Serializable]
     //class to hold all the courses from the database
     public class Courses:IEnumerable<Cours>
     {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
+    [Serializable]
     //class to hold list of people
     public class personCollection : IEnumerable<Person>
     {

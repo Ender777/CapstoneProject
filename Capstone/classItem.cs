@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capstone
 {
+    [Serializable]
     public class classItem: IComparable
     {
         //fields that make a class item

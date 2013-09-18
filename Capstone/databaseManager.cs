@@ -12,6 +12,7 @@ using System.Data.SqlClient;
 
 namespace Capstone
 {
+    [Serializable]
     //class to establish connection to database and process data
     class databaseManager
     {
@@ -20,7 +21,10 @@ namespace Capstone
         private Courses dbCourses = new Courses();
         private List<CourseTime> dbTimes = new List<CourseTime>();
         //connection context
+        //TODO: serialization breaks here, figure out why
         ClassroomSchedulerEntities1 context = new ClassroomSchedulerEntities1();
+    
+        
 
         public List<Classroom> DBClassrooms
         {
@@ -45,7 +49,6 @@ namespace Capstone
                 return dbTimes;
             }
         }
-
         //Method to connect to SQL Server info and retrieve data
         public void ConnectToSQL()
         {
@@ -79,7 +82,7 @@ namespace Capstone
             {
                 DBTimes.Add(ct);
             }
-
+            
         }
     }
 }

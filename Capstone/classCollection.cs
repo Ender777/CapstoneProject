@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Capstone
 {
     //class to store classItems
+    [Serializable]
     class classCollection : IEnumerable<classItem>
     {
         //list of scheduled classes as classItems

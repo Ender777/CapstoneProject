@@ -35,7 +35,7 @@ namespace Capstone
 // </manually generated>
 //------------------------------------------------------------------------------
 
-
+    [Serializable]
     public partial class Classroom
     {
         databaseManager dm = new databaseManager();

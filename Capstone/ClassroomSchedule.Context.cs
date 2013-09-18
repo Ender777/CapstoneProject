@@ -12,7 +12,7 @@ namespace Capstone
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
-    
+    [Serializable]
     public partial class ClassroomSchedulerEntities1 : DbContext
     {
         public ClassroomSchedulerEntities1()
